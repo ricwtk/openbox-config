@@ -1,0 +1,5 @@
+rofi -modi "window,drun,run" &
+xcompmgr &
+ibus-daemon &
+nitrogen --restore &
+xscreensaver &

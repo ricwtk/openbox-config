@@ -5,7 +5,7 @@ rofi.modi:                           sys:~/rofi-scripts/sys.sh,window,drun
 ! "Number of lines" Set from: Default
 ! rofi.lines:                          15
 ! "Number of columns" Set from: Default
-! rofi.columns:                        1
+rofi.columns:                        2
 ! "Font to use" Set from: Default
 rofi.font:                           monofur for powerline 12
 ! rofi.font:                           cantarell 12
