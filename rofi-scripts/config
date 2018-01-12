@@ -8,7 +8,7 @@ rofi.modi:                           sys:~/rofi-scripts/sys.sh,window,drun
 rofi.columns:                        2
 ! "Font to use" Set from: Default
 rofi.font:                           monofur for powerline 12
-! rofi.font:                           cantarell 12
+!rofi.font:                           ubuntu mono 12
 ! "Color scheme for normal row" Set from: Default
 ! rofi.color-normal:                   #fdf6e3,#002b36,#eee8d5,#586e75,#eee8d5
 ! rofi.color-normal:                    #009688,#002b36,#fdf6e3
