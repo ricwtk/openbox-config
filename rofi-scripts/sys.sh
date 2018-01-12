@@ -13,6 +13,13 @@ BR_HIGH="🔆"
 BR_LOGO="$BR_HIGH"
 W_LOGO="📶"
 K_LOGO="🔠"
+S_LOGO="💻"
+# NONE="○○○○○○○○○○" #\u25cb
+NONE="⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀"
+# HALF="◐" #\u25D0
+HALF="⣦"
+# FULL="⬤⬤⬤⬤⬤⬤⬤⬤⬤⬤" #\u2b24
+FULL="⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿"
 P_LOGO="⏻"
 ACTION="☞"
 GLOBE_ICON="🌐"
@@ -214,6 +221,9 @@ loadHome () {
   local BAT_PERCENTAGE="$(upower -i `upower -e | grep BAT` | grep percentage | cut -d : -f 2 | tr -d [:space:])"
   DISP="$DISP\n${B_LOGO}${CS}${ZWS}Battery$ZWS${CS}${BAT_PERCENTAGE}"
 
+  # cpu
+  DISP="$DISP\n${S_LOGO}${CS}${ZWS}Stats$ZWS"
+
   # power
   DISP="$DISP\n$P_LOGO$CS${ZWS}Power$ZWS"
 
@@ -354,6 +364,43 @@ loadBattery () {
   echo $DISP
 }
 
+getProgress () {
+  local NFULL="$(echo "$1/10"|bc)"
+  case "$(echo "$1%10/1" | bc)" in
+    [0-2])
+      local MID="${NONE:0:1}";;
+    [3-7])
+      local MID="$HALF";;
+    [8-9])
+      local MID="${FULL:0:1}";;
+  esac
+  local NNONE="$(echo "10-$NFULL-1"|bc)"
+  echo "${FULL:0:$NFULL}$MID${NONE:0:$NNONE}"
+}
+getGB () {
+  echo "scale=2; $1/1024/1024" | bc
+}
+loadStats () {
+  local DISP="$S_LOGO$CS.."
+  local MEMSWAP="$(free --kilo)"
+  local USEDMEM="$(echo "$MEMSWAP" | awk '/^Mem:/ {printf $3}')"
+  local ALLMEM="$(echo "$MEMSWAP" | awk '/^Mem:/ {printf $2}')"
+  local MEMPERC="$(echo "$USEDMEM*100/$ALLMEM" | bc)"
+  DISP="$DISP\n$S_LOGO $ACTION$CS${ZWS}Memory$ZWS$CS$(getProgress $MEMPERC)$CS$MEMPERC$CS%$CS$(getGB $USEDMEM)${CS}of $(getGB $ALLMEM)${CS}GB"
+  local USEDSWAP="$(echo "$MEMSWAP" | awk '/^Swap:/ {printf $3}')"
+  local ALLSWAP="$(echo "$MEMSWAP" | awk '/^Swap:/ {printf $2}')"
+  local SWAPPERC="$(echo "$USEDSWAP*100/$ALLSWAP" | bc)"
+  DISP="$DISP\n$S_LOGO $ACTION$CS${ZWS}Swap$ZWS$CS$(getProgress $SWAPPERC)$CS$SWAPPERC$CS%$CS$(getGB $USEDSWAP)${CS}of $(getGB $ALLSWAP)${CS}GB"
+  while read -r line
+  do
+    local PERC="$(echo $line | awk '{for (i=2;i<=NF;i++){sum+=$i}}END{printf "%.2f",100-$5*100/sum}')"
+    local NAME="$(echo $line | cut -d " " -f 1 | tr [:lower:] [:upper:])"
+    DISP="$DISP\n$S_LOGO $ACTION$CS$ZWS$NAME$ZWS$CS$(getProgress $PERC)$CS$PERC$CS%"
+
+  done <<< "$(cat /proc/stat | grep -i "^cpu")"
+  echo $DISP
+}
+
 loadPower () {
   local DISP="$P_LOGO$CS.."
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Lock screen$ZWS"
@@ -488,6 +535,9 @@ else
         ibus engine `getIbusEngine $DATA`
         DISP="$DISP\n$(loadHome)"
         ;;
+      $S_LOGO*$ACTION*)
+        DISP="$DISP\n$(loadStats)"
+        ;;
       $P_LOGO*$ACTION*)
         DATA="$(extractData $1)"
         case "$DATA" in
@@ -524,6 +574,9 @@ else
             ;;
           Battery)
             DISP="$DISP\n$(loadBattery)"
+            ;;
+          Stats)
+            DISP="$DISP\n$(loadStats)"
             ;;
           Power)
             DISP="$DISP\n$(loadPower)"
