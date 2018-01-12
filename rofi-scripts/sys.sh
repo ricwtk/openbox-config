@@ -381,7 +381,7 @@ getGB () {
   echo "scale=2; $1/1024/1024" | bc
 }
 loadStats () {
-  local DISP="$S_LOGO$CS.."
+  local DISP="$S_LOGO$CS$ZWS..$ZWS"
   local MEMSWAP="$(free --kilo)"
   local USEDMEM="$(echo "$MEMSWAP" | awk '/^Mem:/ {printf $3}')"
   local ALLMEM="$(echo "$MEMSWAP" | awk '/^Mem:/ {printf $2}')"
@@ -396,8 +396,8 @@ loadStats () {
     local PERC="$(echo $line | awk '{for (i=2;i<=NF;i++){sum+=$i}}END{printf "%.2f",100-$5*100/sum}')"
     local NAME="$(echo $line | cut -d " " -f 1 | tr [:lower:] [:upper:])"
     DISP="$DISP\n$S_LOGO $ACTION$CS$ZWS$NAME$ZWS$CS$(getProgress $PERC)$CS$PERC$CS%"
-
   done <<< "$(cat /proc/stat | grep -i "^cpu")"
+  local DISP="$DISP\n$S_LOGO $ACTION${CS}${ZWS}Advance$ZWS"
   echo $DISP
 }
 
@@ -536,7 +536,15 @@ else
         DISP="$DISP\n$(loadHome)"
         ;;
       $S_LOGO*$ACTION*)
-        DISP="$DISP\n$(loadStats)"
+        DATA="$(extractData $1)"
+        case $DATA in
+          Advance)
+            coproc( gnome-system-monitor > /dev/null 2>&1 )
+            ;;
+          *)
+            DISP="$DISP\n$(loadStats)"
+            ;;
+        esac
         ;;
       $P_LOGO*$ACTION*)
         DATA="$(extractData $1)"
