@@ -18,6 +18,7 @@ ACTION="☞"
 GLOBE_ICON="🌐"
 PENCIL_ICON="✏"
 TICK="✓"
+RT="▶"
 CS="\x1d" # column separator
 ZWS="$(echo -e '\xe2\x80\x8b')"
 
@@ -159,6 +160,14 @@ stepDownVolume () {
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
 }
 
+getActiveMons () {
+  xrandr --listactivemonitors | grep -v "Monitors" | sed 's/.* \(.*\)$/\1/'
+}
+getBrightness () {
+  local a="$(xrandr --verbose | grep -A999 "^$1" | grep -m1 -P -i "^[\t ]*Brightness:" | cut -d ":" -f 2 | tr -d "[:space:]")"
+  echo "$(echo "scale=0; $a*100/1" | bc)%"
+}
+
 loadHome () {
   local DISP=""
   # date and Time
@@ -243,12 +252,23 @@ loadVolume () {
 
 loadBrightness () {
   local DISP="$BR_LOGO$CS${ZWS}..$ZWS"
-  local ACTIVEMONS="$(xrandr --listactivemonitors | grep -v "Monitors" | sed 's/.* \(.*\)$/\1/')"
+  DISP="$DISP\n$BR_LOGO $ACTION$CS${ZWS}Light off$ZWS"
+  DISP="$DISP\n$BR_LOGO $ACTION$CS${ZWS}Dim all$ZWS"
+  DISP="$DISP\n$BR_LOGO $ACTION$CS${ZWS}Brighten all$ZWS"
+  local ACTIVEMONS="$(getActiveMons)"
   while read -r line
   do
-    DISP="$DISP\n$BR_LOGO $ACTION$CS$ZWS$line$ZWS"
+    DISP="$DISP\n$BR_LOGO $ACTION$CS$ZWS$line$ZWS$CS$(getBrightness "$line")"
   done <<< "$ACTIVEMONS"
-
+  DISP="$DISP\n$BR_LOGO $ACTION$CS${ZWS}Monitors configurations$ZWS"
+  echo $DISP
+}
+loadSingleMon () {
+  local DISP="$BR_LOGO$CS${ZWS}Brightness$ZWS$CS$RT$CS$(getBrightness "$1")"
+  for i in 5 10 25 50 75 100
+  do
+    DISP="$DISP\n$BR_LOGO $ACTION$ACTION$CS$ZWS$1${ZWS}$CS$i%"
+  done
   echo $DISP
 }
 
@@ -336,6 +356,7 @@ loadBattery () {
 
 loadPower () {
   local DISP="$P_LOGO$CS.."
+  DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Lock screen$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Log out$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Shut down$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Restart$ZWS"
@@ -367,6 +388,44 @@ else
             toggleMute
             DISP="$DISP\n$(loadVolume)"
             ;;
+        esac
+        ;;
+      $BR_LOGO*$ACTION$ACTION*)
+        MON="$(extractData $1)"
+        PERC="$(echo "$1" | sed 's/.* \(.*\)\%$/\1/')"
+        xrandr --output $MON --brightness "$(echo "scale=2; $PERC/100" | bc)"
+        DISP="$DISP\n$(loadSingleMon "$MON")"
+        ;;
+      $BR_LOGO*$ACTION*)
+        DATA="$(extractData $1)"
+        case $DATA in
+          "Light off")
+            while read -r line
+            do
+              xrandr --output $line --brightness 0.05
+            done <<< "$(getActiveMons)"
+            DISP="$DISP\n$(loadBrightness)"
+            ;;
+          "Dim all")
+            while read -r line
+            do
+              xrandr --output $line --brightness 0.5
+            done <<< "$(getActiveMons)"
+            DISP="$DISP\n$(loadBrightness)"
+            ;;
+          "Brighten all")
+            while read -r line
+            do
+              xrandr --output $line --brightness 1.0
+            done <<< "$(getActiveMons)"
+            DISP="$DISP\n$(loadBrightness)"
+            ;;
+          "Monitors configurations")
+            coproc( arandr > /dev/null 2>&1 )
+            ;;
+          *)
+            DISP="$DISP\n$(loadSingleMon "$DATA")"
+          ;;
         esac
         ;;
       $W_LOGO*$ACTION*)
@@ -432,6 +491,9 @@ else
       $P_LOGO*$ACTION*)
         DATA="$(extractData $1)"
         case "$DATA" in
+          "Lock screen")
+            coproc( xscreensaver-command -lock >/dev/null 2>&1 )
+            ;;
           "Log out")
             coproc( pkill openbox > /dev/null 2>&1 )
             ;;
