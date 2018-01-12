@@ -353,7 +353,7 @@
         <command>xscreensaver-command -lock</command>
       </action>
     </keybind>
-    <keybind key="C-A-delete">
+    <keybind key="W-Delete">
       <action name="Execute">
         <command>xkill</command>
       </action>
