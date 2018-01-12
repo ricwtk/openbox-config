@@ -1,0 +1,117 @@
+
+! Xft
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintslight
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+
+! xterm
+XTerm.vt100.faceName: Ubuntu Mono derivative Powerline:size=10:antialias=true
+
+! xcalc
+xcalc*font:  Noto Mono:size=13
+
+
+! xscreensaver ---------------------------------------------------------------
+! https://github.com/GalliumOS/xscreensaver/blob/master/driver/XScreenSaver.ad.in
+!xscreensaver.dateFormat:    %I:%M%P %a %b %d, %Y
+xscreensaver.antialias:        True
+xscreensaver.hinting:          True
+!font settings
+!general dialog box (affects main hostname, username, password text)
+!xscreensaver.Dialog.headingFont:        -*-fixed-*-r-*-*-36-*-*-*-*-*-*-*
+!xscreensaver.Dialog.bodyFont:           -*-noto sans-*-r-*-*-8-*-*-*-*-*-*-*
+!xscreensaver.Dialog.labelFont:          -*-*-*-r-*-*-0-0-*-*-*-*-*-*
+xscreensaver.Dialog.labelFont:          -*-helvetica-*-r-normal-*-20-*-*-*-*-*-*-*
+!xscreensaver.Dialog.unameFont:          -*-georgia-medium-r-*-*-36-*-*-*-*-*-*-*
+!xscreensaver.Dialog.buttonFont:         -*-noto sans-*-r-*-*-10-*-*-*-*-*-*-*
+!xscreensaver.Dialog.dateFont:           -*-noto sans-medium-r-*-*-0-*-*-*-*-*-*-*
+xscreensaver.passwd.passwdFont:         -*-helvetica-*-r-normal-*-20-*-*-*-*-*-*-*
+
+xscreensaver.Dialog.foreground:         #dddddd
+xscreensaver.Dialog.background:         #111111
+xscreensaver.Dialog.topShadowColor:     #111111
+xscreensaver.Dialog.bottomShadowColor:  #111111
+xscreensaver.Dialog.Button.foreground:  #111111
+xscreensaver.Dialog.Button.background:  #111111
+!username/password input box and date text colour
+xscreensaver.Dialog.text.foreground:    #dddddd
+xscreensaver.Dialog.text.background:    #111111
+xscreensaver.Dialog.internalBorderWidth:1
+xscreensaver.Dialog.borderWidth:        1
+xscreensaver.Dialog.shadowThickness:    1
+!xscreensaver.Dialog.logo.width: 20
+!xscreensaver.Dialog.logo.height: 100
+!timeout bar (background is actually determined by Dialog.text.background)
+xscreensaver.passwd.thermometer.foreground:  #111111
+xscreensaver.passwd.thermometer.background:  #111111
+xscreensaver.passwd.thermometer.width:       1
+
+xscreensaver.splash: False
+xscreensaver.dateFormat:
+xscreensaver.passwd.uname: False
+xscreensaver.passwd.body.label:
+xscreensaver.passwd.heading.label: 
+xscreensaver.passwd.login.label:
+xscreensaver.passwd.unlock.label:
+xscreensaver.passwd.asterisks: True
+
+!https://blog.hartwork.org/?p=2861
+!xscreensaver.dateFormat:
+!xscreensaver.passwd.body.label:
+!xscreensaver.passwd.heading.label:
+!xscreensaver.passwd.login.label:
+!xscreensaver.passwd.thermometer.width:  2
+!xscreensaver.passwd.uname:              False
+!xscreensaver.passwd.unlock.label:
+!xscreensaver.Dialog.background:         #000000
+!xscreensaver.Dialog.foreground:         #ffffff
+!xscreensaver.Dialog.Button.background:  #000000
+!xscreensaver.Dialog.Button.foreground:  #ffffff
+!xscreensaver.Dialog.text.background:    #000000
+!xscreensaver.Dialog.text.foreground:    #ffffff
+!xscreensaver.Dialog.shadowThickness:    1
+!xscreensaver.Dialog.topShadowColor:     #000000
+!xscreensaver.Dialog.bottomShadowColor:  #000000
+
+
+Xcursor.theme: Paper
+
+! special
+!*.foreground:   #f7f7f7
+!*.background:   #1b1b1b
+*.cursorColor:  #f7f7f7
+
+! black
+*.color0:       #000000
+*.color8:       #7a7a7a
+
+! red
+*.color1:       #b84131
+*.color9:       #d6837c
+
+! green
+*.color2:       #7da900
+*.color10:      #c4f137
+
+! yellow
+*.color3:       #c4a500
+*.color11:      #fee14d
+
+! blue
+*.color4:       #62a3c4
+*.color12:      #8dcff0
+
+! magenta
+*.color5:       #ba8acc
+*.color13:      #f79aff
+
+! cyan
+*.color6:       #207383
+*.color14:      #6ad9cf
+
+! white
+*.color7:       #a1a1a1
+*.color15:      #f7f7f7
