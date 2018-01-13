@@ -405,6 +405,8 @@ loadPower () {
   local DISP="$P_LOGO$CS.."
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Lock screen$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Log out$ZWS"
+  DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Suspend$ZWS"
+  DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Hibernate$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Shut down$ZWS"
   DISP="$DISP\n$P_LOGO $ACTION${CS}${ZWS}Restart$ZWS"
   echo $DISP
@@ -555,11 +557,17 @@ else
           "Log out")
             coproc( pkill openbox > /dev/null 2>&1 )
             ;;
+          "Suspend")
+            coproc( systemctl suspend > /dev/null 2>&1 )
+            ;;
+          "Hibernate")
+            coproc( systemctl hibernate > /dev/null 2>&1 )
+            ;;
           "Shut down")
-            coproc( poweroff > /dev/null 2>&1 )
+            coproc( systemctl poweroff > /dev/null 2>&1 )
             ;;
           "Restart")
-            coproc( reboot > /dev/null 2>&1 )
+            coproc( systemctl reboot > /dev/null 2>&1 )
             ;;
         esac
         ;;
