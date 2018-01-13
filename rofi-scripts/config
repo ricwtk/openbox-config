@@ -1,35 +1,28 @@
-! "Enabled modi" Set from: Default
+! "Enabled modi" Set from: File
 rofi.modi:                           sys:~/rofi-scripts/sys.sh,window,drun
 ! "Window width" Set from: Default
 ! rofi.width:                          50
 ! "Number of lines" Set from: Default
 ! rofi.lines:                          15
-! "Number of columns" Set from: Default
+! "Number of columns" Set from: File
 rofi.columns:                        2
-! "Font to use" Set from: Default
+! "Font to use" Set from: File
 rofi.font:                           monofur for powerline 12
 !rofi.font:                           ubuntu mono 12
-! "Color scheme for normal row" Set from: Default
-! rofi.color-normal:                   #fdf6e3,#002b36,#eee8d5,#586e75,#eee8d5
-! rofi.color-normal:                    #009688,#002b36,#fdf6e3
-! "Color scheme for urgent row" Set from: Default
-! rofi.color-urgent:                   #fdf6e3,#dc322f,#eee8d5,#dc322f,#fdf6e3
-! "Color scheme for active row" Set from: Default
-! rofi.color-active:                   #fdf6e3,#268bd2,#eee8d5,#268bd2,#fdf6e3
-! "Color scheme window" Set from: Default
-rofi.color-window:                   #fdf6e3,#002b36
-! "Border width" Set from: Default
+! "Border width" Set from: File
 rofi.bw:                             1
-! "Location on screen" Set from: Default
+! "Location on screen" Set from: File
 rofi.location:                       7
-! "Padding" Set from: Default
+! "Padding" Set from: File
 rofi.padding:                        20
-! "Y-offset relative to location" Set from: Default
+! "Y-offset relative to location" Set from: File
 rofi.yoffset:                        -10
-! "X-offset relative to location" Set from: Default
+! "X-offset relative to location" Set from: File
 rofi.xoffset:                        10
-! "Always show number of lines" Set from: Default
+! "Always show number of lines" Set from: File
 rofi.fixed-num-lines:                false
+! "Whether to load and show icons" Set from: File
+rofi.show-icons:                     true
 ! "Terminal to use" Set from: Default
 ! rofi.terminal:                       rofi-sensible-terminal
 ! "Ssh client to use" Set from: Default
@@ -44,15 +37,19 @@ rofi.fixed-num-lines:                false
 ! rofi.run-shell-command:              {terminal} -e {cmd}
 ! "Command executed on accep-entry-custom for window modus" Set from: Default
 ! rofi.window-command:                 xkill -id {window}
-! "Disable history in run/ssh" Set from: Default
+! "Theme to use to look for icons" Set from: Default
+! rofi.drun-icon-theme:
+! "Disable history in run/ssh" Set from: File
 rofi.disable-history:                true
-! "Use levenshtein sorting" Set from: Default
+! "Use sorting" Set from: Default
+! rofi.sort:                           false
+! "Use levenshtein sorting also for fuzzy matching" Set from: Default
 ! rofi.levenshtein-sort:               false
 ! "Set case-sensitivity" Set from: Default
 ! rofi.case-sensitive:                 false
 ! "Cycle through the results list" Set from: Default
 ! rofi.cycle:                          true
-! "Enable sidebar-mode" Set from: Default
+! "Enable sidebar-mode" Set from: File
 rofi.sidebar-mode:                   true
 ! "Row height (in chars)" Set from: Default
 ! rofi.eh:                             1
@@ -70,38 +67,64 @@ rofi.sidebar-mode:                   true
 ! rofi.tokenize:                       true
 ! "Monitor id to show on" Set from: Default
 ! rofi.m:                              -5
-! "Margin between rows" Set from: Default
+! "Margin between rows *DEPRECATED*" Set from: Default
 ! rofi.line-margin:                    2
-! "Padding within rows" Set from: Default
+! "Padding within rows *DEPRECATED*" Set from: Default
 ! rofi.line-padding:                   1
 ! "Pre-set filter" Set from: Default
 ! rofi.filter:
-! "Separator style (none, dash, solid)" Set from: Default
+! "Separator style (none, dash, solid) *DEPRECATED*" Set from: File
 rofi.separator-style:                none
-! "Hide scroll-bar" Set from: Default
+! "Hide scroll-bar *DEPRECATED*" Set from: Default
 ! rofi.hide-scrollbar:                 false
 ! "Fullscreen" Set from: Default
 ! rofi.fullscreen:                     false
-! "Fake transparency" Set from: Default
+! "Fake transparency *DEPRECATED*" Set from: Default
 ! rofi.fake-transparency:              false
 ! "DPI" Set from: Default
 ! rofi.dpi:                            -1
 ! "Threads to use for string matching" Set from: Default
 ! rofi.threads:                        0
-! "Scrollbar width" Set from: Default
+! "Scrollbar width *DEPRECATED*" Set from: File
 rofi.scrollbar-width:                2
 ! "Scrolling method. (0: Page, 1: Centered)" Set from: Default
 ! rofi.scroll-method:                  0
 ! "Background to use for fake transparency. (background or screenshot)" Set from: Default
 ! rofi.fake-background:                screenshot
-! "Window Format. w (desktop name), t (title), n (name), r (role), c (class)" Set from: Default
-! rofi.window-format:                  {w}   {c}   {t}
+! "Window Format. w (desktop name), t (title), n (name), r (role), c (class) *DEPRECATED*" Set from: Default
+! rofi.window-format:                  {w}    {i}{c}   {t}
 ! "Click outside the window to exit" Set from: Default
 ! rofi.click-to-exit:                  true
 ! "Indicate how it match by underlining it." Set from: Default
 ! rofi.show-match:                     true
+! "New style theme file" Set from: Default
+! rofi.theme:
+! "Color scheme for normal row" Set from: Default
+! rofi.color-normal:
+! "Color scheme for urgent row" Set from: Default
+! rofi.color-urgent:
+! "Color scheme for active row" Set from: Default
+! rofi.color-active:
+! "Color scheme window" Set from: File
+rofi.color-window:                   #fdf6e3,#002b36
+! "Directory containing plugins" Set from: Default
+! rofi.plugin-path:                    /usr/local/lib/rofi
 ! "Pidfile location" Set from: Default
 ! rofi.pid:                            /run/user/1000/rofi.pid
+! "The display name of this browser" Set from: Default
+! rofi.display-window:
+! "The display name of this browser" Set from: Default
+! rofi.display-windowcd:
+! "The display name of this browser" Set from: Default
+! rofi.display-run:
+! "The display name of this browser" Set from: Default
+! rofi.display-ssh:
+! "The display name of this browser" Set from: Default
+! rofi.display-drun:
+! "The display name of this browser" Set from: Default
+! rofi.display-combi:
+! "The display name of this browser" Set from: Default
+! rofi.display-keys:
 ! "Paste primary selection" Set from: Default
 ! rofi.kb-primary-paste:               Control+V,Shift+Insert
 ! "Paste clipboard" Set from: Default
@@ -143,13 +166,13 @@ rofi.scrollbar-width:                2
 ! "Switch to the next mode." Set from: Default
 ! rofi.kb-mode-next:                   Shift+Right,Control+Tab
 ! "Switch to the previous mode." Set from: Default
-! rofi.kb-mode-previous:               Shift+Left,Control+Shift+Tab
+! rofi.kb-mode-previous:               Shift+Left,Control+ISO_Left_Tab
 ! "Go to the previous column" Set from: Default
 ! rofi.kb-row-left:                    Control+Page_Up
 ! "Go to the next column" Set from: Default
 ! rofi.kb-row-right:                   Control+Page_Down
 ! "Select previous entry" Set from: Default
-! rofi.kb-row-up:                      Up,Control+p,Shift+Tab,Shift+ISO_Left_Tab
+! rofi.kb-row-up:                      Up,Control+p,ISO_Left_Tab
 ! "Select next entry" Set from: Default
 ! rofi.kb-row-down:                    Down,Control+n
 ! "Go to next row, if one left, accept it, if no left next mode." Set from: Default
@@ -210,15 +233,37 @@ rofi.scrollbar-width:                2
 ! rofi.kb-custom-18:                   Alt+asterisk
 ! "Custom Keybinding 19" Set from: Default
 ! rofi.kb-custom-19:                   Alt+parenleft
-! "The display name of this browser" Set from: Default
-! rofi.display-ssh:
-! "The display name of this browser" Set from: Default
-! rofi.display-run:
-! "The display name of this browser" Set from: Default
-! rofi.display-drun:
-! "The display name of this browser" Set from: Default
-! rofi.display-window:
-! "The display name of this browser" Set from: Default
-! rofi.display-windowcd:
-! "The display name of this browser" Set from: Default
-! rofi.display-combi:
+! "Select row 1" Set from: Default
+! rofi.kb-select-1:                    Super+1
+! "Select row 2" Set from: Default
+! rofi.kb-select-2:                    Super+2
+! "Select row 3" Set from: Default
+! rofi.kb-select-3:                    Super+3
+! "Select row 4" Set from: Default
+! rofi.kb-select-4:                    Super+4
+! "Select row 5" Set from: Default
+! rofi.kb-select-5:                    Super+5
+! "Select row 6" Set from: Default
+! rofi.kb-select-6:                    Super+6
+! "Select row 7" Set from: Default
+! rofi.kb-select-7:                    Super+7
+! "Select row 8" Set from: Default
+! rofi.kb-select-8:                    Super+8
+! "Select row 9" Set from: Default
+! rofi.kb-select-9:                    Super+9
+! "Select row 10" Set from: Default
+! rofi.kb-select-10:                   Super+0
+! "Go to the previous column" Set from: Default
+! rofi.ml-row-left:                    Mouse6
+! "Go to the next column" Set from: Default
+! rofi.ml-row-right:                   Mouse7
+! "Select previous entry" Set from: Default
+! rofi.ml-row-up:                      Mouse4
+! "Select next entry" Set from: Default
+! rofi.ml-row-down:                    Mouse5
+! "Select hovered row" Set from: Default
+! rofi.me-select-entry:                Mouse1
+! "Accept hovered row" Set from: Default
+! rofi.me-accept-entry:                MouseD1
+! "Accept hovered row with custom action" Set from: Default
+! rofi.me-accept-custom:               Control+MouseD1
