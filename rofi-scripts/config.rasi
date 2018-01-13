@@ -1,7 +1,7 @@
 configuration {
 	modi: "⚙:~/rofi-scripts/sys.sh,window,drun";
-/*	width: 50;*/
-/*	lines: 15;*/
+	width: 50;
+	lines: 10;
 	columns: 2;
 	font: "monofur for powerline 12";
 	bw: 1;
@@ -48,18 +48,18 @@ configuration {
 /*	window-format: "{w}    {i}{c}   {t}";*/
 /*	click-to-exit: true;*/
 /*	show-match: true;*/
-	/* theme: "tnekcir"; */
+/*  theme: "tnekcir";*/
 /*	color-normal: ;*/
 /*	color-urgent: ;*/
 /*	color-active: ;*/
-	color-window: "#fdf6e3,#002b36";
+/*	color-window: "#fdf6e3,#002b36";*/
 /*	plugin-path: "/usr/local/lib/rofi";*/
 /*	pid: "/run/user/1000/rofi.pid";*/
-	display-window: "window";
+	display-window: "🗗";
 /*	display-windowcd: ;*/
 /*	display-run: ;*/
 /*	display-ssh: ;*/
-	display-drun: "drun";
+	display-drun: "🔎";
 /*	display-combi: ;*/
 /*	display-keys: ;*/
 /*	kb-primary-paste: "Control+V,Shift+Insert";*/
@@ -153,7 +153,7 @@ configuration {
     background:                  rgba ( 253, 246, 227, 100 % );
     transparent-background:      rgba ( 0, 0, 0, 0 % );
     alternate-normal-foreground: @foreground;
-    normal-background:           @transparent-background;
+    normal-background:           @background;
     lightfg:                     rgba ( 88, 104, 117, 100 % );
     selected-normal-background:  @lightfg;
     border-color:                rgba ( 0, 43, 54, 100 % );
@@ -169,7 +169,7 @@ configuration {
 }
 #window {
     fullscreen:       false;
-    background-color: @background;
+    background-color: @transparent-background;
     border:           0;
     padding:          0;
     location:         center;
@@ -178,16 +178,18 @@ configuration {
 }
 #mainbox {
     border:  0;
-    padding: 20;
+    padding: 0;
     spacing: 0px;
     expand: true;
     children: [sidebar,content];
     orientation: horizontal;
 }
 #content {
-  padding: 0px 0px 0px 10px;
+  padding: 20px;
   children: [listview, inputbar];
   orientation: vertical;
+	background-color: @normal-background;
+	border-radius: 0px 5px 5px 0px;
 }
 #message {
     border:       0px ;
@@ -260,13 +262,14 @@ configuration {
 }
 #button {
     spacing:    0;
-    text-color: @normal-foreground;
+    text-color: @selected-normal-foreground;
     padding:    10px;
     border-radius: 5px 0px 0px 5px;
+		background-color:		@selected-normal-background;
 }
 #button.selected {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
+    background-color: @normal-background;
+    text-color:       @normal-foreground;
 }
 #inputbar {
     spacing:    0;
