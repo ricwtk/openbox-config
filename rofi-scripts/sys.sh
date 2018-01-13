@@ -85,7 +85,7 @@ setCLogo () {
     fi
   fi
   CLOCK="$(printf '%x' $CLOCK)"
-  C_LOGO="\xf0\x9f\x95\x$CLOCK"
+  C_LOGO="$(echo -e "\xf0\x9f\x95\x$CLOCK")"
 }
 
 setBLogo () {
@@ -418,7 +418,12 @@ then
 else
   if [ $# -eq 1 ]
   then
+    setCLogo
     case $1 in
+      $C_LOGO*)
+        coproc( ~/rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y) )
+        exit
+        ;;
       $V_MUTED*$ACTION* | $V_NONE*$ACTION* | $V_SINGLE*$ACTION* | $V_TRIPLE*$ACTION*)
         DATA="$(extractData $1)"
         case $DATA in
