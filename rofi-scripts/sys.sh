@@ -419,6 +419,7 @@ else
   if [ $# -eq 1 ]
   then
     setCLogo
+    setBLogo
     case $1 in
       $B_LOGO*$ACTION*)
         DISP="$DISP\n$(loadBattery)"
