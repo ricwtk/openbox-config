@@ -1,9 +1,9 @@
 configuration {
 	modi: "⚙:~/openbox-config/rofi-scripts/sys.sh,window,drun";
 	width: 50;
-	lines: 10;
+	lines: 15;
 	columns: 2;
-	font: "monofur for powerline 12";
+/*	font: "monofur for powerline 12";*/
 	font: "noto mono bold 10";
 	fixed-num-lines: false;
 	show-icons: true;
