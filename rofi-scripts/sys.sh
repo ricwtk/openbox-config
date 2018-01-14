@@ -421,7 +421,7 @@ else
     setCLogo
     case $1 in
       $C_LOGO*)
-        coproc( ~/rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y) )
+        coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y) )
         exit
         ;;
       $V_MUTED*$ACTION* | $V_NONE*$ACTION* | $V_SINGLE*$ACTION* | $V_TRIPLE*$ACTION*)

@@ -3,14 +3,14 @@ configuration {
 /*	width: 50;*/
 /*	lines: 10;*/
 /*	columns: 2;*/
-	font: "monofur for powerline 12";
+	font: "noto sans bold 10";
 	bw: 1;
 	location: 7;
 	padding: 20;
-	yoffset: -10;
-	xoffset: 10;
+	yoffset: 0;
+	xoffset: 0;
 	fixed-num-lines: false;
-	show-icons: true;
+	show-icons: false;
 /*	terminal: "rofi-sensible-terminal";*/
 /*	ssh-client: "ssh";*/
 /*	ssh-command: "{terminal} -e {ssh-client} {host}";*/
@@ -24,7 +24,7 @@ configuration {
 /*	levenshtein-sort: false;*/
 /*	case-sensitive: false;*/
 /*	cycle: true;*/
-	sidebar-mode: true;
+/*	sidebar-mode: false;*/
 /*	eh: 1;*/
 /*	auto-select: false;*/
 /*	parse-hosts: false;*/
@@ -37,7 +37,7 @@ configuration {
 /*	line-padding: 1;*/
 /*	filter: ;*/
 	separator-style: "none";
-	hide-scrollbar: true;
+/*	hide-scrollbar: true;*/
 /*	fullscreen: false;*/
 /*	fake-transparency: false;*/
 /*	dpi: -1;*/
@@ -48,7 +48,7 @@ configuration {
 /*	window-format: "{w}    {i}{c}   {t}";*/
 /*	click-to-exit: true;*/
 /*	show-match: true;*/
-/*  theme: "tnekcir";*/
+	theme: "tnekcir-no-sidebar";
 /*	color-normal: ;*/
 /*	color-urgent: ;*/
 /*	color-active: ;*/
@@ -133,155 +133,4 @@ configuration {
 /*	me-select-entry: "Mouse1";*/
 /*	me-accept-entry: "MouseD1";*/
 /*	me-accept-custom: "Control+MouseD1";*/
-}
-
-
-* {
-    selected-normal-foreground:  @lightbg;
-    foreground:                  rgba ( 0, 43, 54, 100 % );
-    normal-foreground:           @foreground;
-    alternate-normal-background: @lightbg;
-    red:                         rgba ( 220, 50, 47, 100 % );
-    selected-urgent-foreground:  @background;
-    blue:                        rgba ( 38, 139, 210, 100 % );
-    urgent-foreground:           @red;
-    alternate-urgent-background: @lightbg;
-    active-foreground:           @blue;
-    lightbg:                     rgba ( 238, 232, 213, 100 % );
-    selected-active-foreground:  @background;
-    alternate-active-background: @lightbg;
-    background:                  rgba ( 253, 246, 227, 100 % );
-    transparent-background:      rgba ( 0, 0, 0, 0 % );
-    alternate-normal-foreground: @foreground;
-    normal-background:           @background;
-    lightfg:                     rgba ( 88, 104, 117, 100 % );
-    selected-normal-background:  @lightfg;
-    border-color:                rgba ( 0, 43, 54, 100 % );
-    spacing:                     2;
-    separatorcolor:              @foreground;
-    urgent-background:           @transparent-background;
-    selected-urgent-background:  @red;
-    alternate-urgent-foreground: @red;
-    background-color:            rgba ( 0, 0, 0, 0 % );
-    alternate-active-foreground: @blue;
-    active-background:           @transparent-background;
-    selected-active-background:  @blue;
-    align-items: center;
-}
-#window {
-    font: "Ubuntu 10";
-    fullscreen:       false;
-    background-color: @tranparent-background;
-    border:           0;
-    padding:          0;
-    location:         center;
-    anchor:           center;
-    border-radius:    5px;
-    width:            50%;
-}
-#mainbox {
-    border:  0;
-    padding: 0;
-    spacing: 0px;
-    expand: true;
-    children: [sidebar,listview,inputbar];
-    orientation: vertical;
-}
-#message {
-    border:       0px ;
-    border-color: @separatorcolor;
-    padding:      0px ;
-}
-#textbox {
-    text-color: @foreground;
-}
-#listview {
-    fixed-height: 0;
-    border:       0px ;
-    border-color: @separatorcolor;
-    spacing:      0px ;
-    scrollbar:    false;
-    padding:      0px 0px 0px;
-}
-#element {
-    border:  0;
-    padding: 10px ;
-}
-#element.normal.normal {
-    background-color: @normal-background;
-    text-color:       @normal-foreground;
-}
-#element.normal.urgent {
-    background-color: @urgent-background;
-    text-color:       @urgent-foreground;
-}
-#element.normal.active {
-    background-color: @active-background;
-    text-color:       @active-foreground;
-}
-#element.selected.normal {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
-}
-#element.selected.urgent {
-    background-color: @selected-urgent-background;
-    text-color:       @selected-urgent-foreground;
-}
-#element.selected.active {
-    background-color: @selected-active-background;
-    text-color:       @selected-active-foreground;
-}
-#element.alternate.normal {
-    background-color: @normal-background;
-    text-color:       @normal-foreground;
-}
-#element.alternate.urgent {
-    background-color: @urgent-background;
-    text-color:       @urgent-foreground;
-}
-#element.alternate.active {
-    background-color: @active-background;
-    text-color:       @active-foreground;
-}
-#scrollbar {
-    width:        2px ;
-    border:       0;
-    handle-color: @normal-foreground;
-    handle-width: 2px ;
-    padding:      2px;
-}
-#sidebar {
-    border:       0px ;
-    border-color: @separatorcolor;
-    padding:      0px 0px 0px ;
-    orientation:  horizontal;
-}
-#button {
-    spacing:    0;
-    text-color: @normal-foreground;
-    padding:    10px;
-    border-radius: 5px 5px 0px 0px;
-		background-color:		@normal-background;
-}
-#button.selected {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
-}
-#inputbar {
-    spacing:    0;
-    text-color: @normal-foreground;
-    padding:    0px 0px 0px;
-    background-color: @normal-background;
-}
-#case-indicator {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-#entry {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-#prompt {
-    spacing:    0;
-    text-color: @normal-foreground;
 }

@@ -2,15 +2,15 @@
 goTo () {
   if [[ $1 = "<" ]]
   then
-    coproc( ~/rofi-scripts/rofi-cal-mon.sh $2 $3 )
+    coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $2 $3 )
     exit
   elif [[ $3 = ">" ]]
   then
-    coproc( ~/rofi-scripts/rofi-cal-mon.sh $1 $2 )
+    coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $1 $2 )
     exit
   elif [[ $1 =~ ^[0-9]{4}$ ]]
   then
-    coproc( ~/rofi-scripts/rofi-cal-year.sh $1 )
+    coproc( ~/openbox-config/rofi-scripts/rofi-cal-year.sh $1 )
     exit
   fi
 }
@@ -40,14 +40,14 @@ while read -r line
 do
   for i in 0 3 6 9 12 15 18
   do
-    echo "     ${line:$i:2}"
+    printf "%11s\n" "${line:$i:2}"
   done
   LINE_N=$(($LINE_N+1))
   case "$LINE_N" in
     1)
       printf "< %s %s\n" "${MONNAME[$LASTMONTH]}" "$LASTYEAR";;
     4)
-      echo "    $YEAR_N";;
+      printf "%11s\n" "$YEAR_N";;
     7)
       printf "%s %s >\n" "${MONNAME[$NEXTMONTH]}" "$NEXTYEAR";;
     *)

@@ -1,7 +1,7 @@
 /* copy this file to ~/.local/share/rofi/themes or /usr/share/rofi/themes */
-/* add `theme: "tnekcir";` to config.rasi */
+/* add `theme: "tnekcir-left-sidebar";` to config.rasi */
 
-/* Tnekcir rasi theme */
+/* Tnekcir-left-sidebar rasi theme */
 /* Created by Richard Wong */
 configuration {
   sidebar-mode: true;

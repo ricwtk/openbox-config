@@ -1,14 +1,10 @@
 configuration {
-	modi: "⚙:~/rofi-scripts/sys.sh,window,drun";
+	modi: "⚙:~/openbox-config/rofi-scripts/sys.sh,window,drun";
 	width: 50;
 	lines: 10;
 	columns: 2;
 	font: "monofur for powerline 12";
-	bw: 1;
-	location: 7;
-	padding: 20;
-	yoffset: -10;
-	xoffset: 10;
+	font: "noto mono bold 10";
 	fixed-num-lines: false;
 	show-icons: true;
 /*	terminal: "rofi-sensible-terminal";*/
@@ -48,7 +44,7 @@ configuration {
 /*	window-format: "{w}    {i}{c}   {t}";*/
 /*	click-to-exit: true;*/
 /*	show-match: true;*/
-	theme: "tnekcir";
+	theme: "tnekcir-left-sidebar";
 /*	color-normal: ;*/
 /*	color-urgent: ;*/
 /*	color-active: ;*/
