@@ -5,6 +5,8 @@
 /* Created by Richard Wong */
 configuration {
   sidebar-mode: true;
+  kb-mode-next: "Shift+Down";
+	kb-mode-previous: "Shift+Up";
 }
 
 *{
