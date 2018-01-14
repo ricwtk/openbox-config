@@ -21,14 +21,14 @@ for i in 1 2 3
 do
   for j in 0 3 6 9
   do
-    printf "%10s %s\n" ${MONNAME[$(($i+$j))]} $1
+    printf "%s %s\n" ${MONNAME[$(($i+$j))]} $1
   done
   if [[ $i = 1 ]]
   then
-    printf "%8s\n" "< $(($1-1))"
+    printf "%s\n" "< $(($1-1))"
   elif [[ $i = 3 ]]
   then
-    printf "%23s\n" "$(($1+1)) >"
+    printf "%s\n" "$(($1+1)) >"
   else
     echo ""
   fi

@@ -40,16 +40,16 @@ while read -r line
 do
   for i in 0 3 6 9 12 15 18
   do
-    printf "%15s\n" "${line:$i:2}"
+    printf "%s\n" "${line:$i:2}"
   done
   LINE_N=$(($LINE_N+1))
   case "$LINE_N" in
     1)
-      printf "%13s\n" "< ${MONNAME[$LASTMONTH]} $LASTYEAR";;
+      printf "%s\n" "< ${MONNAME[$LASTMONTH]} $LASTYEAR";;
     4)
-      printf "%14s\n" "$YEAR_N";;
+      printf "%s\n" "$YEAR_N";;
     7)
-      printf "%15s\n" "${MONNAME[$NEXTMONTH]} $NEXTYEAR >";;
+      printf "%s\n" "${MONNAME[$NEXTMONTH]} $NEXTYEAR >";;
     *)
       echo "";;
   esac
