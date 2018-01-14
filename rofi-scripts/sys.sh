@@ -420,6 +420,9 @@ else
   then
     setCLogo
     case $1 in
+      $B_LOGO*$ACTION*)
+        DISP="$DISP\n$(loadBattery)"
+        ;;
       $C_LOGO*)
         coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y) )
         exit
