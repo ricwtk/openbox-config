@@ -7,7 +7,7 @@ My configuration of [Openbox](http://openbox.org/wiki/Main_Page) with
 
 ## Openbox
 
-Version: 3.6.1 from Ubuntu 17.10 Official repository
+Version: 3.6.1 from Ubuntu 17.10 official repository
 
 ## Rofi
 
@@ -21,6 +21,6 @@ Version: 1.3.0 from https://github.com/dunst-project/dunst
 
 ## XScreenSaver
 
-Version: 5.36 from Ubuntu 17.10 Official repository
+Version: 5.36 from Ubuntu 17.10 official repository
 
 The flip clock screensaver is Gluqlo from https://github.com/alexanderk23/gluqlo.
