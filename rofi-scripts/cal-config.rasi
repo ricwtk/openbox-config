@@ -24,7 +24,7 @@ configuration {
 /*	levenshtein-sort: false;*/
 /*	case-sensitive: false;*/
 /*	cycle: true;*/
-/*	sidebar-mode: false;*/
+/*	sidebar-mode: true;*/
 /*	eh: 1;*/
 /*	auto-select: false;*/
 /*	parse-hosts: false;*/
@@ -49,6 +49,7 @@ configuration {
 /*	click-to-exit: true;*/
 /*	show-match: true;*/
 	theme: "tnekcir-no-sidebar";
+	theme: "input-emph-nobar";
 /*	color-normal: ;*/
 /*	color-urgent: ;*/
 /*	color-active: ;*/
@@ -133,4 +134,8 @@ configuration {
 /*	me-select-entry: "Mouse1";*/
 /*	me-accept-entry: "MouseD1";*/
 /*	me-accept-custom: "Control+MouseD1";*/
+}
+
+#element {
+	horizontal-align: 0.5;
 }
