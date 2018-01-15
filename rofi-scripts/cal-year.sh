@@ -1,17 +1,18 @@
 #!/bin/bash
+DIRPATH=~/Applications/openbox-config/rofi-scripts
 MONNAME=(invalid Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
 goTo () {
   case "$@" in
     "<"*)
-      coproc( ~/openbox-config/rofi-scripts/rofi-cal-year.sh $2 )
+      coproc( $DIRPATH/rofi-cal-year.sh $2 )
       exit
       ;;
     *">")
-      coproc( ~/openbox-config/rofi-scripts/rofi-cal-year.sh $1 )
+      coproc( $DIRPATH/rofi-cal-year.sh $1 )
       exit
       ;;
     [a-Z]*)
-      coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $1 $2 )
+      coproc( $DIRPATH/rofi-cal-mon.sh $1 $2 )
       exit
       ;;
   esac

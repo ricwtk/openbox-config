@@ -1,10 +1,11 @@
 #!/bin/bash
 # $1 year
+DIRPATH=~/Applications/openbox-config/rofi-scripts
 rofi \
-  -config ~/openbox-config/rofi-scripts/cal-config.rasi \
+  -config $DIRPATH/cal-config.rasi \
   -columns 3 \
   -lines 5 \
   -width 25 \
   -fixed-num-lines true \
-  -modi "$1":"~/openbox-config/rofi-scripts/cal-year.sh $1" \
+  -modi "$1":"$DIRPATH/cal-year.sh $1" \
   -show

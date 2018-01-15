@@ -1,16 +1,17 @@
 #!/bin/bash
+DIRPATH=~/Applications/openbox-config/rofi-scripts
 goTo () {
   if [[ $1 = "<" ]]
   then
-    coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $2 $3 )
+    coproc( $DIRPATH/rofi-cal-mon.sh $2 $3 )
     exit
   elif [[ $3 = ">" ]]
   then
-    coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $1 $2 )
+    coproc( $DIRPATH/rofi-cal-mon.sh $1 $2 )
     exit
   elif [[ $1 =~ ^[0-9]{4}$ ]]
   then
-    coproc( ~/openbox-config/rofi-scripts/rofi-cal-year.sh $1 )
+    coproc( $DIRPATH/rofi-cal-year.sh $1 )
     exit
   fi
 }

@@ -1,4 +1,5 @@
 #!/bin/bash
+DIRPATH=~/Applications/openbox-config/rofi-scripts
 B_AC="🔌"
 B_BAT="🔋"
 B_LOGO=""
@@ -425,7 +426,7 @@ else
         DISP="$DISP\n$(loadBattery)"
         ;;
       $C_LOGO*)
-        coproc( ~/openbox-config/rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y) )
+        coproc( $DIRPATH/rofi-cal-mon.sh $(date +%b\ %Y) )
         exit
         ;;
       $V_MUTED*$ACTION* | $V_NONE*$ACTION* | $V_SINGLE*$ACTION* | $V_TRIPLE*$ACTION*)
