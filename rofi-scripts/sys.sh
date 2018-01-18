@@ -515,9 +515,9 @@ else
         DISP="$DISP\n$W_LOGO${CS}Connecting to $DATA"
         if [[ -z "$(nmcli -m multiline con | grep -E "NAME: +$DATA$")" ]]
         then
-          coproc( nmcli dev wifi connect "$DATA" > /dev/null 2&>1 )
+          coproc( nmcli dev wifi connect "$DATA" > /dev/null 2>&1 )
         else
-          coproc( nmcli con up "$DATA" > /dev/null 2&>1 )
+          coproc( nmcli con up "$DATA" > /dev/null 2>&1 )
         fi
         ;;
       $K_LOGO*$ACTION*)
