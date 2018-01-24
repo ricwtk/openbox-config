@@ -56,6 +56,9 @@ more () {
 applications () {
   echo -e "^ca(1,rofi -show drun)^fn($iconfont)\uf17c^fn()^ca();▋▋"
 }
+windows () {
+  echo -e "^ca(1,rofi -show window)^fn($iconfont)\uf2d2^fn()^ca();▋▋"
+}
 volumeBlock () {
   local volText=""
   local volTextDummy=""
@@ -110,7 +113,7 @@ networkBlock () {
 createOutput () {
   local left
   local left_dummy
-  for l in applications spacer desktopSelect
+  for l in applications spacer desktopSelect spacer windows
   do
     while IFS=";" read -a array
     do
