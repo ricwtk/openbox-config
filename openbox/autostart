@@ -1,5 +1,6 @@
 rofi -modi "window,drun,run" &
 xcompmgr &
+~/Applications/openbox-config/dzen2/dzen2_statusbar.sh &
 ibus-daemon &
 nitrogen --restore &
 xscreensaver &

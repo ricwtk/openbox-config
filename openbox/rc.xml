@@ -153,7 +153,7 @@
      Many programs reserve space automatically, but you can use this in other
      cases. -->
   <margins>
-    <top>0</top>
+    <top>20</top>
     <bottom>0</bottom>
     <left>0</left>
     <right>0</right>
@@ -184,11 +184,17 @@
         <to>left</to>
         <wrap>no</wrap>
       </action>
+      <action name="Execute">
+        <command>~/Applications/openbox-config/dzen2/reload_dzen.sh</command>
+      </action>
     </keybind>
     <keybind key="C-A-Right">
       <action name="GoToDesktop">
         <to>right</to>
         <wrap>no</wrap>
+      </action>
+      <action name="Execute">
+        <command>~/Applications/openbox-config/dzen2/reload_dzen.sh</command>
       </action>
     </keybind>
     <keybind key="C-A-Up">
