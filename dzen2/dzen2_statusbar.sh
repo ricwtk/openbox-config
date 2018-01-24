@@ -29,23 +29,6 @@ rm -f /tmp/dzenpid
 dateAndTime () {
   echo "^ca(1,$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)) $(date +%H:%M\ \ %d\ %b\ %Y) ^ca();$(date +%H:%M\ \ %d\ %b\ %Y)"
 }
-volumeBlock () {
-  local volText=""
-  local volTextDummy=""
-  local color="$fgColor"
-  if [[ "$($volume isMuted)" = "yes" ]]
-  then
-    color="$hiddenColor"
-  fi
-  local volPerc="$($volume getVolume)"
-  volTextDummy="█ $volPerc%"
-  volText="^fn($iconfont)\u$( echo "obase=16;61478 + $volPerc/34" | bc )^fn() $volPerc^fn($smallfont)%^fn()"
-  volText="^ca(4,$volume stepUp 1)$volText^ca()"
-  volText="^ca(5,$volume stepDown 3)$volText^ca()"
-  volText="^ca(1,$volume toggleMute)$volText^ca()"
-
-  echo -e "^fg($color)$volText^fg();$volTextDummy"
-}
 desktopSelect () {
   local gap="^r(5x0)"
   local op="^ca(1, $wm removeDesktop)$gap-$gap^ca()"
@@ -64,9 +47,77 @@ desktopSelect () {
   op="^ca(5,$wm prevD)$op^ca()"
   echo -e "$op"
 }
+spacer () {
+  echo -e "^r(10x0);█"
+}
+more () {
+  echo -e "^ca(1,rofi -show ⚙)^fn($iconfont)\uf141^fn()^ca();▋▋"
+}
+applications () {
+  echo -e "^ca(1,rofi -show drun)^fn($iconfont)\uf17c^fn()^ca();▋▋"
+}
+volumeBlock () {
+  local volText=""
+  local volTextDummy=""
+  local color="$fgColor"
+  if [[ "$($volume isMuted)" = "yes" ]]
+  then
+    color="$hiddenColor"
+  fi
+  local volPerc="$($volume getVolume)"
+  volTextDummy="▋ $volPerc%"
+  volText="^fn($iconfont)\u$( echo "obase=16;61478 + $volPerc/34" | bc )^fn() $volPerc^fn($smallfont)%^fn()"
+  volText="^ca(4,$volume stepUp 1)$volText^ca()"
+  volText="^ca(5,$volume stepDown 3)$volText^ca()"
+  volText="^ca(1,$volume toggleMute)$volText^ca()"
+
+  echo -e "^fg($color)$volText^fg();$volTextDummy"
+}
+batteryBlock () {
+  local isPluggedIn="$(upower -i `upower -e | grep "AC"` | grep "online" | sed "s/^.*: *\([a-z]*\) */\1/")"
+  local batPercent="$(upower -i `upower -e |grep "BAT"` | grep "percentage" | sed "s/^.*: *\([0-9]*\)% */\1/")"
+  if [[ "$isPluggedIn" = "yes" ]]
+  then
+    local icon="\uf1e6"
+  else
+    local icon="\u$(echo "obase=16;62020-$batPercent/20.5" | bc)"
+  fi
+  local color="$fgColor"
+  if [[ $batPercent -lt 15 ]]
+  then
+    color="$alertColor"
+  fi
+  echo -e "^fg($color)^fn($iconfont)$icon^fn() $batPercent^fn($smallfont)%^fn()^fg();▋▋ $batPercent%"
+}
+networkBlock () {
+  local ethernetState="$(nmcli device | grep "^[a-zA-Z0-9]* *ethernet" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
+  local wifiState="$(nmcli device | grep "^[a-zA-Z0-9]* *wifi" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
+  local color="$fgColor"
+  if [[ "$ethernetState" = "connected" ]]
+  then
+    local icon="\uf0e8"
+  elif [[ "$wifiState" = "connected" ]]
+  then
+    local icon="\uf1eb"
+  else
+    local icon="\uf0e8"
+    color="$hiddenColor"
+  fi
+  echo -e "^fg($color)^fn($iconfont)$icon^fn()^fg();▋▋"
+}
+
 
 createOutput () {
-  local left="$(desktopSelect)"
+  local left
+  local left_dummy
+  for l in applications spacer desktopSelect
+  do
+    while IFS=";" read -a array
+    do
+      left="$left${array[0]}"
+      left_dummy="$left_dummy${array[1]}"
+    done <<< "$($l)"
+  done
   local center=""
   local center_dummy=""
   while IFS=";" read -a array
@@ -78,11 +129,14 @@ createOutput () {
 
   local right=""
   local right_dummy=""
-  while IFS=";" read -a array
+  for b in volumeBlock spacer batteryBlock spacer networkBlock spacer more
   do
-    right="$right${array[0]}"
-    right_dummy="$right_dummy${array[1]}"
-  done <<< "$(volumeBlock)"
+    while IFS=";" read -a array
+    do
+      right="$right${array[0]}"
+      right_dummy="$right_dummy${array[1]}"
+    done <<< "$($b)"
+  done
   local right_offset="$(( $(xftwidth "$font" "${right_dummy}x") + $padding ))"
   local op="^p(_LEFT)^p($padding)$left_pre$left$left_post \
   ^p(_CENTER)^p(-$center_offset)$center_pre$center$center_post \
