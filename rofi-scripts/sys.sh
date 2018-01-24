@@ -1,5 +1,6 @@
 #!/bin/bash
-DIRPATH=~/Applications/openbox-config/rofi-scripts
+DIRPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+reload_dzen="$DIRPATH/../dzen2/reload_dzen.sh"
 B_AC="🔌"
 B_BAT="🔋"
 B_LOGO=""
@@ -148,6 +149,7 @@ toggleMute () {
   else
     pacmd set-sink-mute "$(getCurrentSink)" yes
   fi
+  $($reload_dzen)
 }
 stepUpVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -157,6 +159,7 @@ stepUpVolume () {
     newVol=$fullVolumeValue
   fi
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
+  $($reload_dzen)
 }
 stepDownVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -166,6 +169,7 @@ stepDownVolume () {
     newVol=0
   fi
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
+  $($reload_dzen)
 }
 
 getActiveMons () {
