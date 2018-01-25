@@ -15,6 +15,12 @@ Version: 1.4.2 from https://github.com/DaveDavenport/rofi/tree/1.4.2
 
 The themes used in the configurations are from https://github.com/ricwtk/rofi-themes.
 
+## dzen2
+
+Version: dzen-0.9.5-svn from Ubuntu repository 
+
+The source code can be found on https://github.com/robm/dzen.
+
 ## dunst
 
 Version: 1.3.0 from https://github.com/dunst-project/dunst 
