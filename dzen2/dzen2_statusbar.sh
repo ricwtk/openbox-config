@@ -30,7 +30,7 @@ rm -f /tmp/dzenpid
 
 # format of the output of a block: <output>;<boldfont text>;<font text>;<smallfont text>;<iconfont text>;<extra padding>
 gap="^r(10x0)"
-gapsize2="25"
+gapsize2="23"
 
 dateAndTime () {
   local displayFormat="%H:%M  %a  %d %b %Y"
@@ -88,7 +88,7 @@ volumeBlock () {
   op="^ca(5,$volume stepDown 3)$op^ca()"
   op="^ca(1,$volume toggleMute)$op^ca()"
   op="^fg($color)$op^fg()"
-  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $volPerc") + $(xftwidth "$smallfont" "%") ))"
+
   echo -e "$op;; $volPerc;%;$icon;$gapsize2"
 }
 batteryBlock () {
@@ -106,7 +106,7 @@ batteryBlock () {
     color="$alertColor"
   fi
   local op="$gap^fg($color)^fn($iconfont)$icon^fn() $batPerc^fn($smallfont)%^fn()^fg()$gap"
-  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $batPerc") + $(xftwidth "$smallfont" "%") ))"
+
   echo -e "$op;; $batPerc;%;$icon;$gapsize2"
 }
 networkBlock () {
@@ -124,8 +124,7 @@ networkBlock () {
     color="$hiddenColor"
   fi
   local op="$gap^fg($color)^fn($iconfont)$icon^fn()^fg()$gap"
-  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") ))"
-  # echo -e "$op;$tw"
+
   echo -e "$op;;;;$icon;$gapsize2"
 }
 brightnessBlock () {
@@ -139,8 +138,7 @@ brightnessBlock () {
   op="^ca(3,$monitor ${actions[$(( ($s+1)%3 ))]})$op^ca()"
   op="^ca(4,$monitor stepUp)$op^ca()"
   op="^ca(5,$monitor stepDown)$op^ca()"
-  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e ${icons[$s]})") + $(xftwidth "$font" " $brightness") + $(xftwidth "$smallfont" "%") ))"
-  # echo -e "$op;$tw"
+
   echo -e "$op;; $brightness;%;$icon;$gapsize2"
 }
 keyboardBlock () {
@@ -161,8 +159,7 @@ keyboardBlock () {
   local op="$gap^fn($iconfont)$icon^fn() $big ^fn($smallfont)$small^fn()$gap"
   op="^ca(1,ibus engine ${allEngines[$nextIdx]} & $reload_dzen)$op^ca()"
   op="^ca(3,ibus engine ${allEngines[$prevIdx]} & $reload_dzen)$op^ca()"
-  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $big ") + $(xftwidth "$smallfont" "$small") ))"
-  # echo -e "$op;$tw"
+
   echo -e "$op;; $big;$small;$icon;$gapsize2"
 }
 
@@ -265,7 +262,7 @@ do
   -fn "$font" \
   -bg "$bgColor" \
   -fg "$fgColor" \
-  -e "button3=exec:kill -SIGUSR1 $(</tmp/pid);sigusr1=exec:kill -SIGUSR1 $(</tmp/pid);" &
+  -e "button3=exec:kill -SIGUSR1 $(</tmp/pid);sigusr1=exec:kill -SIGUSR1 $(</tmp/pid);onexit=exec:rm -f /tmp/dzenpid,exit:13" &
 
 
   # -y "$(( $y+$h-20 ))" \ use this for bottom positioning
