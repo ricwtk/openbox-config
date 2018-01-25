@@ -149,7 +149,7 @@ toggleMute () {
   else
     pacmd set-sink-mute "$(getCurrentSink)" yes
   fi
-  $($reload_dzen)
+  $reload_dzen
 }
 stepUpVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -159,7 +159,7 @@ stepUpVolume () {
     newVol=$fullVolumeValue
   fi
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
-  $($reload_dzen)
+  $reload_dzen
 }
 stepDownVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -457,6 +457,7 @@ else
         MON="$(extractData $1)"
         PERC="$(echo "$1" | sed 's/.* \(.*\)\%$/\1/')"
         xrandr --output $MON --brightness "$(echo "scale=2; $PERC/100" | bc)"
+        $reload_dzen &
         DISP="$DISP\n$(loadSingleMon "$MON")"
         ;;
       $BR_LOGO*$ACTION*)
@@ -490,6 +491,7 @@ else
             DISP="$DISP\n$(loadSingleMon "$DATA")"
           ;;
         esac
+        $reload_dzen &
         ;;
       $W_LOGO*$ACTION*)
         DATA="$(extractData $1)"
@@ -549,6 +551,7 @@ else
       $K_LOGO*$PENCIL_ICON*)
         DATA="$(extractData $1)"
         ibus engine `getIbusEngine $DATA`
+        $reload_dzen &
         DISP="$DISP\n$(loadHome)"
         ;;
       $S_LOGO*$ACTION*)
