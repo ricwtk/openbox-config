@@ -2,13 +2,13 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 font="Noto Sans:size=9"
 boldfont="Noto Sans:bold:size=9"
-smallfont="Noto Sans:size=9"
+smallfont="Noto Sans:size=6"
 iconfont="FontAwesome:size=10"
 padding="10"
 left_pre=""
 left_post=""
-center_pre="^fn($boldfont)"
-center_post="^fn()"
+center_pre=""
+center_post=""
 right_pre=""
 right_post=""
 bgColor="#263238"
@@ -23,15 +23,23 @@ reload_dzen="$DIR/reload_dzen.sh"
 volume="$DIR/volume.sh"
 wm="$DIR/wm.sh"
 monitor="$DIR/monitor.sh"
+calendar="$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)"
 
 # remove previously saved pid
 rm -f /tmp/dzenpid
 
+# format of the output of a block: <output>;<boldfont text>;<font text>;<smallfont text>;<iconfont text>;<extra padding>
+gap="^r(10x0)"
+gapsize2="25"
+
 dateAndTime () {
-  echo "^ca(1,$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)) $(date +%H:%M\ \ %d\ %b\ %Y) ^ca();$(date +%H:%M\ \ %d\ %b\ %Y)"
+  local displayFormat="%H:%M  %a  %d %b %Y"
+  local op="$(date +"$displayFormat")"
+  op="^ca(1,$calendar)$op^ca()"
+  op="^fn($boldfont)$op^fn()"
+  echo -e "$op;$(date +"$displayFormat");;;;0"
 }
 desktopSelect () {
-  local gap="^r(5x0)"
   local op="^ca(1, $wm removeDesktop)$gap-$gap^ca()"
   while IFS=" " read -a array
   do
@@ -48,50 +56,58 @@ desktopSelect () {
   op="^ca(5,$wm prevD)$op^ca()"
   echo -e "$op"
 }
+terminal () {
+  local op="^ca(1,x-terminal-emulator)$gap^fn($iconfont)\uf120^fn()$gap^ca()"
+  echo -e "$op;;;;\uf120;$gapsize2"
+}
 spacer () {
-  echo -e "^r(10x0);█"
+  echo -e "^r(10x0);;;;;15"
 }
 more () {
-  echo -e "^ca(1,rofi -show ⚙)^fn($iconfont)\uf141^fn()^ca();▋▋"
+  local op="^ca(1,rofi -show ⚙)$gap^fn($iconfont)\uf141^fn()$gap^ca()"
+  echo -e "$op;;;;\uf141;$gapsize2"
 }
 applications () {
-  echo -e "^ca(1,rofi -show drun)^fn($iconfont)\uf17c^fn()^ca();▋▋"
+  local op="^ca(1,rofi -show drun)$gap^fn($iconfont)\uf17c^fn()$gap^ca()"
+  echo -e "$op;;;;\uf17c;$gapsize2"
 }
 windows () {
-  echo -e "^ca(1,rofi -show window)^fn($iconfont)\uf2d2^fn()^ca();▋▋"
+  local op="^ca(1,rofi -show window)$gap^fn($iconfont)\uf2d2^fn()$gap^ca()"
+  echo -e "$op;;;;\uf2d2;$gapsize2"
 }
 volumeBlock () {
-  local volText=""
-  local volTextDummy=""
   local color="$fgColor"
   if [[ "$($volume isMuted)" = "yes" ]]
   then
     color="$hiddenColor"
   fi
   local volPerc="$($volume getVolume)"
-  volTextDummy="▋ $volPerc%"
-  volText="^fn($iconfont)\u$( echo "obase=16;61478 + $volPerc/34" | bc )^fn() $volPerc^fn($smallfont)%^fn()"
-  volText="^ca(4,$volume stepUp 1)$volText^ca()"
-  volText="^ca(5,$volume stepDown 3)$volText^ca()"
-  volText="^ca(1,$volume toggleMute)$volText^ca()"
-
-  echo -e "^fg($color)$volText^fg();$volTextDummy"
+  local icon="\u$( echo "obase=16;61478 + $volPerc/34" | bc )"
+  local op="$gap^fn($iconfont)$icon^fn() $volPerc^fn($smallfont)%^fn()$gap"
+  op="^ca(4,$volume stepUp 1)$op^ca()"
+  op="^ca(5,$volume stepDown 3)$op^ca()"
+  op="^ca(1,$volume toggleMute)$op^ca()"
+  op="^fg($color)$op^fg()"
+  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $volPerc") + $(xftwidth "$smallfont" "%") ))"
+  echo -e "$op;; $volPerc;%;$icon;$gapsize2"
 }
 batteryBlock () {
   local isPluggedIn="$(upower -i `upower -e | grep "AC"` | grep "online" | sed "s/^.*: *\([a-z]*\) */\1/")"
-  local batPercent="$(upower -i `upower -e |grep "BAT"` | grep "percentage" | sed "s/^.*: *\([0-9]*\)% */\1/")"
+  local batPerc="$(upower -i `upower -e |grep "BAT"` | grep "percentage" | sed "s/^.*: *\([0-9]*\)% */\1/")"
   if [[ "$isPluggedIn" = "yes" ]]
   then
     local icon="\uf1e6"
   else
-    local icon="\u$(echo "obase=16;62020-$batPercent/20.5" | bc)"
+    local icon="\u$(echo "obase=16;62020-$batPerc/20.5" | bc)"
   fi
   local color="$fgColor"
-  if [[ $batPercent -lt 15 ]]
+  if [[ $batPerc -lt 15 ]]
   then
     color="$alertColor"
   fi
-  echo -e "^fg($color)^fn($iconfont)$icon^fn() $batPercent^fn($smallfont)%^fn()^fg();▋▋ $batPercent%"
+  local op="$gap^fg($color)^fn($iconfont)$icon^fn() $batPerc^fn($smallfont)%^fn()^fg()$gap"
+  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $batPerc") + $(xftwidth "$smallfont" "%") ))"
+  echo -e "$op;; $batPerc;%;$icon;$gapsize2"
 }
 networkBlock () {
   local ethernetState="$(nmcli device | grep "^[a-zA-Z0-9]* *ethernet" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
@@ -107,7 +123,10 @@ networkBlock () {
     local icon="\uf0e8"
     color="$hiddenColor"
   fi
-  echo -e "^fg($color)^fn($iconfont)$icon^fn()^fg();▋▋"
+  local op="$gap^fg($color)^fn($iconfont)$icon^fn()^fg()$gap"
+  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") ))"
+  # echo -e "$op;$tw"
+  echo -e "$op;;;;$icon;$gapsize2"
 }
 brightnessBlock () {
   local brightness="$($monitor overall)"
@@ -115,28 +134,43 @@ brightnessBlock () {
   local actions=("dimAll" "brightenAll" "lightOffAll")
   local s="$(( $brightness/34 ))"
 
-  local op="^fn($iconfont)${icons[$s]}^fn() $brightness%"
-  local op_dummy="▋▋ $brightness%"
+  local op="$gap^fn($iconfont)${icons[$s]}^fn() $brightness^fn($smallfont)%^fn()$gap"
   op="^ca(1,$monitor ${actions[$s]})$op^ca()"
   op="^ca(3,$monitor ${actions[$(( ($s+1)%3 ))]})$op^ca()"
   op="^ca(4,$monitor stepUp)$op^ca()"
   op="^ca(5,$monitor stepDown)$op^ca()"
-  echo -e "$op;$op_dummy"
+  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e ${icons[$s]})") + $(xftwidth "$font" " $brightness") + $(xftwidth "$smallfont" "%") ))"
+  # echo -e "$op;$tw"
+  echo -e "$op;; $brightness;%;$icon;$gapsize2"
 }
 keyboardBlock () {
   local icon="\uf11c"
-  local big="$(ibus engine | sed "s/^.*:\([a-z]*\)$/\1/")"
-  big=${big[0,2]^^}
-  local small="$(ibus engine | sed "s/^[a-z]*:\([a-z]*\):.*$/\1/")"
-  small=${small[0,2]^^}
-  echo -e "^fn($iconfont)$icon^fn()$big$small"
+  local thisEngine="$(ibus engine)"
+  local big="$(sed "s/^.*:\([a-z]*\)$/\1/" <<< "$thisEngine")"
+  big=${big:0:2}
+  big=${big^^}
+  local small="$(sed "s/^[a-z]*:\([a-z]*\):.*$/\1/" <<< "$thisEngine")"
+  small=${small:0:2}
+  small=${small^^}
+  local allEngines
+  read -a allEngines <<< $(ibus read-config | sed -n "s/.*engines-order.*\[\(.*\)\]/\1/p" | sed -e "s/[',]//g")
+  allEngines=($(printf "%s\n" "${allEngines[@]}" | sort))
+  local thisIdx=$(( $(printf "%s\n" "${allEngines[@]}" | grep -n "^$thisEngine$" | sed "s/:$thisEngine//") - 1 ))
+  local nextIdx=$(( ($thisIdx+1)==${#allEngines[@]} ? 0 : $thisIdx+1 ))
+  local prevIdx=$(( ($thisIdx-1)<0 ? ${#allEngines[@]}-1 : $thisIdx-1 ))
+  local op="$gap^fn($iconfont)$icon^fn() $big ^fn($smallfont)$small^fn()$gap"
+  op="^ca(1,ibus engine ${allEngines[$nextIdx]} & $reload_dzen)$op^ca()"
+  op="^ca(3,ibus engine ${allEngines[$prevIdx]} & $reload_dzen)$op^ca()"
+  # local tw="$(( $(xftwidth "$iconfont" "$(echo -e $icon)") + $(xftwidth "$font" " $big ") + $(xftwidth "$smallfont" "$small") ))"
+  # echo -e "$op;$tw"
+  echo -e "$op;; $big;$small;$icon;$gapsize2"
 }
 
 
 createOutput () {
   local left
   local left_dummy
-  for l in applications spacer desktopSelect spacer windows
+  for l in applications spacer terminal spacer desktopSelect spacer windows
   do
     while IFS=";" read -a array
     do
@@ -144,26 +178,60 @@ createOutput () {
       left_dummy="$left_dummy${array[1]}"
     done <<< "$($l)"
   done
-  local center=""
-  local center_dummy=""
-  while IFS=";" read -a array
-  do
-    center="$center${array[0]}"
-    center_dummy="$center_dummy${array[1]}"
-  done <<< "$(dateAndTime)"
-  local center_offset="$(( $(xftwidth "$font" "$center_dummy")/2 ))"
 
-  local right=""
-  local right_dummy=""
-  for b in keyboardBlock spacer volumeBlock spacer brightnessBlock spacer batteryBlock spacer networkBlock spacer more
+  local center
+  local center_offset
+  local center_boldtext
+  local center_text
+  local center_smalltext
+  local center_icons
+  local center_padding=0
+  for c in dateAndTime
+  do
+    while IFS=";" read -a array
+    do
+      center="$center${array[0]}"
+      center_boldtext="$center_boldtext${array[1]}"
+      center_text="$center_text${array[2]}"
+      center_smalltext="$center_smalltext${array[3]}"
+      center_icons="$center_icons${array[4]}"
+      center_padding="$(( $center_padding + ${array[5]} ))"
+    done <<< "$($c)"
+  done
+
+  center_offset="$(( $center_offset + $(xftwidth "$boldfont" "$center_boldtext") ))"
+  center_offset="$(( $center_offset + $(xftwidth "$font" "$center_text") ))"
+  center_offset="$(( $center_offset + $(xftwidth "$smallfont" "$center_smalltext") ))"
+  center_offset="$(( $center_offset + $(xftwidth "$iconfont" "$center_icons") ))"
+  center_offset="$(( $center_offset + $center_padding ))"
+  center_offset="$(( $center_offset / 2 ))"
+
+  local right
+  local right_offset
+  local right_boldtext
+  local right_text
+  local right_smalltext
+  local right_icons
+  local right_padding=0
+  for r in keyboardBlock volumeBlock brightnessBlock batteryBlock networkBlock more
   do
     while IFS=";" read -a array
     do
       right="$right${array[0]}"
-      right_dummy="$right_dummy${array[1]}"
-    done <<< "$($b)"
+      right_boldtext="$right_boldtext${array[1]}"
+      right_text="$right_text${array[2]}"
+      right_smalltext="$right_smalltext${array[3]}"
+      right_icons="$right_icons${array[4]}"
+      right_padding="$(( $right_padding + ${array[5]} ))"
+    done <<< "$($r)"
   done
-  local right_offset="$(( $(xftwidth "$font" "${right_dummy}x") + $padding ))"
+  right_offset="$(( $right_offset + $(xftwidth "$boldfont" "$right_boldtext") ))"
+  right_offset="$(( $right_offset + $(xftwidth "$font" "$right_text") ))"
+  right_offset="$(( $right_offset + $(xftwidth "$smallfont" "$right_smalltext") ))"
+  right_offset="$(( $right_offset + $(xftwidth "$iconfont" "$right_icons") ))"
+  right_offset="$(( $right_offset + $right_padding ))"
+  right_offset="$(( $right_offset + $padding ))"
+
   local op="^p(_LEFT)^p($padding)$left_pre$left$left_post \
   ^p(_CENTER)^p(-$center_offset)$center_pre$center$center_post \
   ^p(_RIGHT)^p(-$right_offset)$right_pre$right$right_post"
