@@ -2,6 +2,7 @@
 
 My configuration of [Openbox](http://openbox.org/wiki/Main_Page) with 
 - [Rofi](https://github.com/DaveDavenport/rofi),
+- [dzen2](https://github.com/robm/dzen),
 - [dunst](https://github.com/dunst-project/dunst), and
 - [XScreenSaver](https://www.jwz.org/xscreensaver/)
 
