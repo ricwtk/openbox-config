@@ -173,10 +173,10 @@ stepDownVolume () {
 }
 
 getActiveMons () {
-  xrandr --listactivemonitors | grep -v "Monitors" | sed 's/.* \(.*\)$/\1/'
+  xrandr --listactivemonitors | sed "/^Monitors/d;s/.* \(.*\)$/\1/"
 }
 getBrightness () {
-  local a="$(xrandr --verbose | grep -A999 "^$1" | grep -m1 -P -i "^[\t ]*Brightness:" | cut -d ":" -f 2 | tr -d "[:space:]")"
+  local a="$(xrandr --verbose | sed -n "/$1/,/Brightness:/p" | sed -n "s/^[ \t]*Brightness: *\([0-9\.]*\) *$/\1/p")"
   echo "$(echo "scale=0; $a*100/1" | bc)%"
 }
 

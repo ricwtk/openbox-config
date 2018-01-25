@@ -22,6 +22,7 @@ selectedBgColor="#607D8B"
 reload_dzen="$DIR/reload_dzen.sh"
 volume="$DIR/volume.sh"
 wm="$DIR/wm.sh"
+monitor="$DIR/monitor.sh"
 
 # remove previously saved pid
 rm -f /tmp/dzenpid
@@ -108,6 +109,23 @@ networkBlock () {
   fi
   echo -e "^fg($color)^fn($iconfont)$icon^fn()^fg();▋▋"
 }
+brightnessBlock () {
+  local brightness="$($monitor overall)"
+  local icons=("\uf005" "\uf123" "\uf006")
+  local actions=("dimAll" "brightenAll" "lightOffAll")
+  local s="$(( $brightness/34 ))"
+
+  local op="^fn($iconfont)${icons[$s]}^fn() $brightness%"
+  local op_dummy="▋▋ $brightness%"
+  op="^ca(1,$monitor ${actions[$s]})$op^ca()"
+  op="^ca(3,$monitor ${actions[$(( ($s+1)%3 ))]})$op^ca()"
+  op="^ca(4,$monitor stepUp)$op^ca()"
+  op="^ca(5,$monitor stepDown)$op^ca()"
+  echo -e "$op;$op_dummy"
+}
+keyboardBlock () {
+  echo -e "$op"
+}
 
 
 createOutput () {
@@ -132,7 +150,7 @@ createOutput () {
 
   local right=""
   local right_dummy=""
-  for b in volumeBlock spacer batteryBlock spacer networkBlock spacer more
+  for b in volumeBlock spacer brightnessBlock spacer batteryBlock spacer networkBlock spacer more
   do
     while IFS=";" read -a array
     do
