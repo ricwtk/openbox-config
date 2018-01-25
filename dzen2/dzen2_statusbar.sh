@@ -124,7 +124,12 @@ brightnessBlock () {
   echo -e "$op;$op_dummy"
 }
 keyboardBlock () {
-  echo -e "$op"
+  local icon="\uf11c"
+  local big="$(ibus engine | sed "s/^.*:\([a-z]*\)$/\1/")"
+  big=${big[0,2]^^}
+  local small="$(ibus engine | sed "s/^[a-z]*:\([a-z]*\):.*$/\1/")"
+  small=${small[0,2]^^}
+  echo -e "^fn($iconfont)$icon^fn()$big$small"
 }
 
 
@@ -150,7 +155,7 @@ createOutput () {
 
   local right=""
   local right_dummy=""
-  for b in volumeBlock spacer brightnessBlock spacer batteryBlock spacer networkBlock spacer more
+  for b in keyboardBlock spacer volumeBlock spacer brightnessBlock spacer batteryBlock spacer networkBlock spacer more
   do
     while IFS=";" read -a array
     do
