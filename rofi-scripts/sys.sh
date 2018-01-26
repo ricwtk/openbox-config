@@ -514,6 +514,7 @@ else
             coproc( x-terminal-emulator --show -e nmtui > /dev/null 2>&1 ) # this option is meant for Guake
             ;;
         esac
+        $reload_dzen &
         ;;
       $W_LOGO*$GLOBE_ICON*)
         DATA="$(extractData $1)"
@@ -525,6 +526,7 @@ else
         else
           coproc( nmcli con up "$DATA" > /dev/null 2>&1 )
         fi
+        $reload_dzen &
         ;;
       $K_LOGO*$ACTION*)
         DATA="$(extractData $1)"

@@ -67,6 +67,10 @@ more () {
   local op="^ca(1,rofi -show ⚙)$gap^fn($iconfont)\uf141^fn()$gap^ca()"
   echo -e "$op;;;;\uf141;$gapsize2"
 }
+reload () {
+  local op="^ca(1,$reload_dzen)$gap^fn($iconfont)\uf021^fn()$gap^ca()"
+  echo -e "$op;;;;\uf021;$gapsize2"
+}
 applications () {
   local op="^ca(1,rofi -show drun)$gap^fn($iconfont)\uf17c^fn()$gap^ca()"
   echo -e "$op;;;;\uf17c;$gapsize2"
@@ -167,7 +171,7 @@ keyboardBlock () {
 createOutput () {
   local left
   local left_dummy
-  for l in applications spacer terminal spacer desktopSelect spacer windows
+  for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
   do
     while IFS=";" read -a array
     do
@@ -251,7 +255,7 @@ do
     while true
     do
       echo -e "$(createOutput)"
-      sleep 5 &
+      sleep 30 &
       wait $!
     done
   ) | dzen2 -ta l \
