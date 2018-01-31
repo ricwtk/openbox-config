@@ -4,3 +4,4 @@ xcompmgr &
 ibus-daemon &
 nitrogen --restore &
 xscreensaver &
+skippy-xd --start-daemon &

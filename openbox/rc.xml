@@ -364,6 +364,11 @@
         <command>xkill</command>
       </action>
     </keybind>
+    <keybind key="W-a">
+      <action name="Execute">
+        <command>skippy-xd --toggle-window-picker</command>
+      </action>
+    </keybind>
   </keyboard>
   <mouse>
     <dragThreshold>1</dragThreshold>

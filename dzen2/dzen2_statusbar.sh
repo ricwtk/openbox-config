@@ -4,7 +4,7 @@ font="Noto Sans:size=9"
 boldfont="Noto Sans:bold:size=9"
 smallfont="Noto Sans:size=6"
 iconfont="FontAwesome:size=10"
-padding="10"
+padding="0"
 left_pre=""
 left_post=""
 center_pre=""
@@ -27,6 +27,8 @@ calendar="$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)"
 
 # remove previously saved pid
 rm -f /tmp/dzenpid
+rm -f /tmp/dzenchange
+touch /tmp/dzenchange
 
 # format of the output of a block: <output>;<boldfont text>;<font text>;<smallfont text>;<iconfont text>;<extra padding>
 gap="^r(10x0)"
@@ -248,13 +250,79 @@ do
   h="$(echo ${config} | sed 's/^.*x\([0-9]*\)\/.*/\1/')"
   x="$(echo ${config} | sed 's/^.*+\([0-9]*\)+.*/\1/')"
   y="$(echo ${config} | sed 's/^.*+\([0-9]*\)$/\1/')"
+  init=1
+  declare -a left center right
+  declare -a l_boldtext  c_boldtext  r_boldtext
+  declare -a l_text      c_text      r_text
+  declare -a l_smalltext c_smalltext r_smalltext
+  declare -a l_icons     c_icons     r_icons
+  declare -a l_padding   c_padding   r_padding  
+  # left_offset center_offset right_offset
   (
     echo $BASHPID >> /tmp/dzenpid
     echo $BASHPID > /tmp/pid
     trap 'printf " "' SIGUSR1
     while true
     do
-      echo -e "$(createOutput)"
+      # left
+      i=0
+      for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
+      do
+        while IFS=";" read -a array
+        do
+          left[$i]="${array[0]}"
+          i=$(( $i + 1 ))
+        done <<< "$($l)"
+      done
+
+      i=0
+      for c in dateAndTime
+      do
+        while IFS=";" read -a array
+        do
+          center[$i]="${array[0]}"
+          c_boldtext[$i]="${array[1]}"
+          c_text[$i]="${array[2]}"
+          c_smalltext[$i]="${array[3]}"
+          c_icons[$i]="${array[4]}"
+          c_padding[$i]="${array[5]}"
+          i=$(( $i + 1 ))
+        done <<< "$($c)"
+      done
+      c_offset=0
+      c_offset="$(( $c_offset + $(xftwidth "$boldfont" "$(printf "%s" "${c_boldtext[@]}")") ))"
+      c_offset="$(( $c_offset + $(xftwidth "$font" "$(printf "%s" "${c_text[@]}")") ))"
+      c_offset="$(( $c_offset + $(xftwidth "$smallfont" "$(printf "%s" "${c_smalltext[@]}")") ))"
+      c_offset="$(( $c_offset + $(xftwidth "$iconfont" "$(printf "%s" "${c_icons[@]}")") ))"
+      # c_offset="$(( $c_offset + $c_padding ))"
+      c_offset="$(( $c_offset + $(echo ${c_padding[@]} | sed 's/ /+/g' | bc) ))"      
+      c_offset="$(( $c_offset / 2 ))"
+
+      i=0
+      for r in keyboardBlock volumeBlock brightnessBlock batteryBlock networkBlock more
+      do
+        while IFS=";" read -a array
+        do
+          right[$i]="${array[0]}"
+          r_boldtext[$i]="${array[1]}"
+          r_text[$i]="${array[2]}"
+          r_smalltext[$i]="${array[3]}"
+          r_icons[$i]="${array[4]}"
+          r_padding[$i]="${array[5]}"
+          i=$(( $i + 1 ))
+        done <<< "$($r)"
+      done
+      r_offset=0
+      r_offset="$(( $r_offset + $(xftwidth "$boldfont" "$(printf "%s" "${r_boldtext[@]}")") ))"
+      r_offset="$(( $r_offset + $(xftwidth "$font" "$(printf "%s" "${r_text[@]}")") ))"
+      r_offset="$(( $r_offset + $(xftwidth "$smallfont" "$(printf "%s" "${r_smalltext[@]}")") ))"
+      r_offset="$(( $r_offset + $(xftwidth "$iconfont" "$(printf "%s" "${r_icons[@]}")") ))"
+      r_offset="$(( $r_offset + $(echo ${r_padding[@]} | sed 's/ /+/g' | bc) ))"
+
+      echo -e "^p(_LEFT)^p($padding)$left_pre$(printf "%s" "${left[@]}")$left_post \
+        ^p(_CENTER)^p(-$c_offset)$center_pre$(printf "%s" "${center[@]}")$center_post \
+        ^p(_RIGHT)^p(-$r_offset)$right_pre$(printf "%s" "${right[@]}")$right_post"
+      # echo -e "$(createOutput)"
       sleep 30 &
       wait $!
     done
