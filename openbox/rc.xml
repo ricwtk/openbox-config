@@ -184,17 +184,11 @@
         <to>left</to>
         <wrap>no</wrap>
       </action>
-      <action name="Execute">
-        <command>~/Applications/openbox-config/dzen2/reload_dzen.sh</command>
-      </action>
     </keybind>
     <keybind key="C-A-Right">
       <action name="GoToDesktop">
         <to>right</to>
         <wrap>no</wrap>
-      </action>
-      <action name="Execute">
-        <command>~/Applications/openbox-config/dzen2/reload_dzen.sh</command>
       </action>
     </keybind>
     <keybind key="C-A-Up">

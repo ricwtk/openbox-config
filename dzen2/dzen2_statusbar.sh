@@ -4,7 +4,7 @@ font="Noto Sans:size=9"
 boldfont="Noto Sans:bold:size=9"
 smallfont="Noto Sans:size=6"
 iconfont="FontAwesome:size=10"
-padding="0"
+padding="10"
 left_pre=""
 left_post=""
 center_pre=""
@@ -16,6 +16,10 @@ fgColor="#ECEFF1"
 alertColor="#F44336"
 hiddenColor="#607D8B"
 selectedBgColor="#607D8B"
+bat_acConnectedMsg="🔌  AC connected"
+bat_acDisconnectedMsg="🔋  AC disconnected"
+bat_warnLevel="15"
+
 # xftwidth from https://github.com/vixus0/xftwidth
 
 # functions string
@@ -25,20 +29,31 @@ wm="$DIR/wm.sh"
 monitor="$DIR/monitor.sh"
 calendar="$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)"
 
+# filenames
+f_pid="/tmp/dzenpid"
+f_c_pid="/tmp/pid"
+f_change="/tmp/dzenchange"
+
 # remove previously saved pid
-rm -f /tmp/dzenpid
-rm -f /tmp/dzenchange
-touch /tmp/dzenchange
+rm -f $f_pid
+rm -f $f_change
+touch $f_change
 
 # format of the output of a block: <output>;<boldfont text>;<font text>;<smallfont text>;<iconfont text>;<extra padding>
 gap="^r(10x0)"
 gapsize2="23"
+
+init=1
 
 dateAndTime () {
   local displayFormat="%H:%M  %a  %d %b %Y"
   local op="$(date +"$displayFormat")"
   op="^ca(1,$calendar)$op^ca()"
   op="^fn($boldfont)$op^fn()"
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_dateAndTime ( while true; do sleep 30; echo "dateAndTime" >> $f_change; $reload_dzen; done )
+  fi
   echo -e "$op;$(date +"$displayFormat");;;;0"
 }
 desktopSelect () {
@@ -56,6 +71,10 @@ desktopSelect () {
   op="$op^ca(1, $wm addDesktop)$gap+$gap^ca()"
   op="^ca(4,$wm nextD)$op^ca()"
   op="^ca(5,$wm prevD)$op^ca()"
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_desktopSelect ( xprop -root -spy | grep --line-buffered -e "^_NET_CURRENT_DESKTOP" -e "^_NET_NUMBER_OF_DESKTOPS" | while read i; do echo "desktopSelect" >> $f_change; $reload_dzen; done )
+  fi
   echo -e "$op"
 }
 terminal () {
@@ -70,7 +89,7 @@ more () {
   echo -e "$op;;;;\uf141;$gapsize2"
 }
 reload () {
-  local op="^ca(1,$reload_dzen)$gap^fn($iconfont)\uf021^fn()$gap^ca()"
+  local op="^ca(1,echo "all" >> $f_change && $reload_dzen)$gap^fn($iconfont)\uf021^fn()$gap^ca()"
   echo -e "$op;;;;\uf021;$gapsize2"
 }
 applications () {
@@ -94,7 +113,10 @@ volumeBlock () {
   op="^ca(5,$volume stepDown 3)$op^ca()"
   op="^ca(1,$volume toggleMute)$op^ca()"
   op="^fg($color)$op^fg()"
-
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_volumeBlock ( pactl subscribe | grep --line-buffered "sink" | while read i; do echo "volumeBlock" >> $f_change; $reload_dzen; done )
+  fi
   echo -e "$op;; $volPerc;%;$icon;$gapsize2"
 }
 batteryBlock () {
@@ -107,12 +129,29 @@ batteryBlock () {
     local icon="\u$(echo "obase=16;62020-$batPerc/20.5" | bc)"
   fi
   local color="$fgColor"
-  if [[ $batPerc -lt 15 ]]
+  if [[ $batPerc -lt $bat_warnLevel && "$isPluggedIn" = "no" ]]
   then
     color="$alertColor"
+    notify-send "Battery low ($batPerc %)" -u critical
   fi
   local op="$gap^fg($color)^fn($iconfont)$icon^fn() $batPerc^fn($smallfont)%^fn()^fg()$gap"
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_batteryBlock_1 ( upower -m | grep --line-buffered -e "AC" -e "BAT" | while read i; do echo "batteryBlock" >> $f_change; $reload_dzen; done )
 
+    coproc dzen2_batteryBlock_2 ( upower -m | grep --line-buffered "daemon changed" | while read i
+      do 
+        isPluggedIn="$(upower -i `upower -e | grep "AC"` | grep "online" | sed "s/^.*: *\([a-z]*\) */\1/")"
+        if [[ $isPluggedIn = "yes" ]]
+        then
+          notify-send "$bat_acConnectedMsg"
+        else
+          notify-send "$bat_acDisconnectedMsg"
+        fi
+        echo "batteryBlock" >> $f_change
+        $reload_dzen
+      done )
+  fi
   echo -e "$op;; $batPerc;%;$icon;$gapsize2"
 }
 networkBlock () {
@@ -130,7 +169,10 @@ networkBlock () {
     color="$hiddenColor"
   fi
   local op="$gap^fg($color)^fn($iconfont)$icon^fn()^fg()$gap"
-
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_networkBlock ( nmcli m | while read i; do echo "networkBlock" >> $f_change; $reload_dzen; done )
+  fi
   echo -e "$op;;;;$icon;$gapsize2"
 }
 brightnessBlock () {
@@ -170,77 +212,77 @@ keyboardBlock () {
 }
 
 
-createOutput () {
-  local left
-  local left_dummy
-  for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
-  do
-    while IFS=";" read -a array
-    do
-      left="$left${array[0]}"
-      left_dummy="$left_dummy${array[1]}"
-    done <<< "$($l)"
-  done
+# createOutput () {
+#   local left
+#   local left_dummy
+#   for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
+#   do
+#     while IFS=";" read -a array
+#     do
+#       left="$left${array[0]}"
+#       left_dummy="$left_dummy${array[1]}"
+#     done <<< "$($l)"
+#   done
 
-  local center
-  local center_offset
-  local center_boldtext
-  local center_text
-  local center_smalltext
-  local center_icons
-  local center_padding=0
-  for c in dateAndTime
-  do
-    while IFS=";" read -a array
-    do
-      center="$center${array[0]}"
-      center_boldtext="$center_boldtext${array[1]}"
-      center_text="$center_text${array[2]}"
-      center_smalltext="$center_smalltext${array[3]}"
-      center_icons="$center_icons${array[4]}"
-      center_padding="$(( $center_padding + ${array[5]} ))"
-    done <<< "$($c)"
-  done
+#   local center
+#   local center_offset
+#   local center_boldtext
+#   local center_text
+#   local center_smalltext
+#   local center_icons
+#   local center_padding=0
+#   for c in dateAndTime
+#   do
+#     while IFS=";" read -a array
+#     do
+#       center="$center${array[0]}"
+#       center_boldtext="$center_boldtext${array[1]}"
+#       center_text="$center_text${array[2]}"
+#       center_smalltext="$center_smalltext${array[3]}"
+#       center_icons="$center_icons${array[4]}"
+#       center_padding="$(( $center_padding + ${array[5]} ))"
+#     done <<< "$($c)"
+#   done
 
-  center_offset="$(( $center_offset + $(xftwidth "$boldfont" "$center_boldtext") ))"
-  center_offset="$(( $center_offset + $(xftwidth "$font" "$center_text") ))"
-  center_offset="$(( $center_offset + $(xftwidth "$smallfont" "$center_smalltext") ))"
-  center_offset="$(( $center_offset + $(xftwidth "$iconfont" "$center_icons") ))"
-  center_offset="$(( $center_offset + $center_padding ))"
-  center_offset="$(( $center_offset / 2 ))"
+#   center_offset="$(( $center_offset + $(xftwidth "$boldfont" "$center_boldtext") ))"
+#   center_offset="$(( $center_offset + $(xftwidth "$font" "$center_text") ))"
+#   center_offset="$(( $center_offset + $(xftwidth "$smallfont" "$center_smalltext") ))"
+#   center_offset="$(( $center_offset + $(xftwidth "$iconfont" "$center_icons") ))"
+#   center_offset="$(( $center_offset + $center_padding ))"
+#   center_offset="$(( $center_offset / 2 ))"
 
-  local right
-  local right_offset
-  local right_boldtext
-  local right_text
-  local right_smalltext
-  local right_icons
-  local right_padding=0
-  for r in keyboardBlock volumeBlock brightnessBlock batteryBlock networkBlock more
-  do
-    while IFS=";" read -a array
-    do
-      right="$right${array[0]}"
-      right_boldtext="$right_boldtext${array[1]}"
-      right_text="$right_text${array[2]}"
-      right_smalltext="$right_smalltext${array[3]}"
-      right_icons="$right_icons${array[4]}"
-      right_padding="$(( $right_padding + ${array[5]} ))"
-    done <<< "$($r)"
-  done
-  right_offset="$(( $right_offset + $(xftwidth "$boldfont" "$right_boldtext") ))"
-  right_offset="$(( $right_offset + $(xftwidth "$font" "$right_text") ))"
-  right_offset="$(( $right_offset + $(xftwidth "$smallfont" "$right_smalltext") ))"
-  right_offset="$(( $right_offset + $(xftwidth "$iconfont" "$right_icons") ))"
-  right_offset="$(( $right_offset + $right_padding ))"
-  right_offset="$(( $right_offset + $padding ))"
+#   local right
+#   local right_offset
+#   local right_boldtext
+#   local right_text
+#   local right_smalltext
+#   local right_icons
+#   local right_padding=0
+#   for r in keyboardBlock volumeBlock brightnessBlock batteryBlock networkBlock more
+#   do
+#     while IFS=";" read -a array
+#     do
+#       right="$right${array[0]}"
+#       right_boldtext="$right_boldtext${array[1]}"
+#       right_text="$right_text${array[2]}"
+#       right_smalltext="$right_smalltext${array[3]}"
+#       right_icons="$right_icons${array[4]}"
+#       right_padding="$(( $right_padding + ${array[5]} ))"
+#     done <<< "$($r)"
+#   done
+#   right_offset="$(( $right_offset + $(xftwidth "$boldfont" "$right_boldtext") ))"
+#   right_offset="$(( $right_offset + $(xftwidth "$font" "$right_text") ))"
+#   right_offset="$(( $right_offset + $(xftwidth "$smallfont" "$right_smalltext") ))"
+#   right_offset="$(( $right_offset + $(xftwidth "$iconfont" "$right_icons") ))"
+#   right_offset="$(( $right_offset + $right_padding ))"
+#   right_offset="$(( $right_offset + $padding ))"
 
-  local op="^p(_LEFT)^p($padding)$left_pre$left$left_post \
-  ^p(_CENTER)^p(-$center_offset)$center_pre$center$center_post \
-  ^p(_RIGHT)^p(-$right_offset)$right_pre$right$right_post"
-  echo -e "$op"
+#   local op="^p(_LEFT)^p($padding)$left_pre$left$left_post \
+#   ^p(_CENTER)^p(-$center_offset)$center_pre$center$center_post \
+#   ^p(_RIGHT)^p(-$right_offset)$right_pre$right$right_post"
+#   echo -e "$op"
 
-}
+# }
 
 while read -r line
 do
@@ -250,7 +292,7 @@ do
   h="$(echo ${config} | sed 's/^.*x\([0-9]*\)\/.*/\1/')"
   x="$(echo ${config} | sed 's/^.*+\([0-9]*\)+.*/\1/')"
   y="$(echo ${config} | sed 's/^.*+\([0-9]*\)$/\1/')"
-  init=1
+
   declare -a left center right
   declare -a l_boldtext  c_boldtext  r_boldtext
   declare -a l_text      c_text      r_text
@@ -259,71 +301,99 @@ do
   declare -a l_padding   c_padding   r_padding  
   # left_offset center_offset right_offset
   (
-    echo $BASHPID >> /tmp/dzenpid
-    echo $BASHPID > /tmp/pid
+    echo $BASHPID >> $f_pid
+    echo $BASHPID > $f_c_pid
     trap 'printf " "' SIGUSR1
     while true
     do
+      # get and clear change list
+      changes="$(cat $f_change)"
+      rm -f $f_change
+      touch $f_change
       # left
       i=0
       for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
       do
-        while IFS=";" read -a array
-        do
-          left[$i]="${array[0]}"
-          i=$(( $i + 1 ))
-        done <<< "$($l)"
+        if [[ $init = "1" || "$(grep -e "^$l$" -e "^all$" <<< "$changes")" ]]
+        then
+          while IFS=";" read -a array
+          do  
+            left[$i]="${array[0]}"
+          done <<< "$($l)"
+        fi
+        i=$(( $i + 1 ))
       done
 
+      # center
       i=0
+      update_offset=0
       for c in dateAndTime
       do
-        while IFS=";" read -a array
-        do
-          center[$i]="${array[0]}"
-          c_boldtext[$i]="${array[1]}"
-          c_text[$i]="${array[2]}"
-          c_smalltext[$i]="${array[3]}"
-          c_icons[$i]="${array[4]}"
-          c_padding[$i]="${array[5]}"
-          i=$(( $i + 1 ))
-        done <<< "$($c)"
+        if [[ $init = "1" || "$(grep -e "^$c$" -e "^all$" <<< "$changes")" ]]
+        then
+          update_offset=1
+          while IFS=";" read -a array
+          do
+            center[$i]="${array[0]}"
+            c_boldtext[$i]="${array[1]}"
+            c_text[$i]="${array[2]}"
+            c_smalltext[$i]="${array[3]}"
+            c_icons[$i]="${array[4]}"
+            c_padding[$i]="${array[5]}"
+          done <<< "$($c)"
+        fi
+        i=$(( $i + 1 ))
       done
-      c_offset=0
-      c_offset="$(( $c_offset + $(xftwidth "$boldfont" "$(printf "%s" "${c_boldtext[@]}")") ))"
-      c_offset="$(( $c_offset + $(xftwidth "$font" "$(printf "%s" "${c_text[@]}")") ))"
-      c_offset="$(( $c_offset + $(xftwidth "$smallfont" "$(printf "%s" "${c_smalltext[@]}")") ))"
-      c_offset="$(( $c_offset + $(xftwidth "$iconfont" "$(printf "%s" "${c_icons[@]}")") ))"
-      # c_offset="$(( $c_offset + $c_padding ))"
-      c_offset="$(( $c_offset + $(echo ${c_padding[@]} | sed 's/ /+/g' | bc) ))"      
-      c_offset="$(( $c_offset / 2 ))"
+      if [[ $update_offset = "1" ]]
+      then
+        c_offset=0
+        c_offset="$(( $c_offset + $(xftwidth "$boldfont" "$(printf "%s" "${c_boldtext[@]}")") ))"
+        c_offset="$(( $c_offset + $(xftwidth "$font" "$(printf "%s" "${c_text[@]}")") ))"
+        c_offset="$(( $c_offset + $(xftwidth "$smallfont" "$(printf "%s" "${c_smalltext[@]}")") ))"
+        c_offset="$(( $c_offset + $(xftwidth "$iconfont" "$(printf "%s" "${c_icons[@]}")") ))"
+        c_offset="$(( $c_offset + $(echo ${c_padding[@]} | sed 's/ /+/g' | bc) ))"      
+        c_offset="$(( $c_offset / 2 ))"
+      fi
 
+      # right
       i=0
+      update_offset=0
       for r in keyboardBlock volumeBlock brightnessBlock batteryBlock networkBlock more
       do
-        while IFS=";" read -a array
-        do
-          right[$i]="${array[0]}"
-          r_boldtext[$i]="${array[1]}"
-          r_text[$i]="${array[2]}"
-          r_smalltext[$i]="${array[3]}"
-          r_icons[$i]="${array[4]}"
-          r_padding[$i]="${array[5]}"
-          i=$(( $i + 1 ))
-        done <<< "$($r)"
+        if [[ $init = "1" || "$(grep -e "^$r$" -e "^all$" <<< "$changes")" ]]
+        then
+          update_offset=1
+          while IFS=";" read -a array
+          do    
+            right[$i]="${array[0]}"
+            r_boldtext[$i]="${array[1]}"
+            r_text[$i]="${array[2]}"
+            r_smalltext[$i]="${array[3]}"
+            r_icons[$i]="${array[4]}"
+            r_padding[$i]="${array[5]}"
+          done <<< "$($r)"
+        fi
+        i=$(( $i + 1 ))
       done
-      r_offset=0
-      r_offset="$(( $r_offset + $(xftwidth "$boldfont" "$(printf "%s" "${r_boldtext[@]}")") ))"
-      r_offset="$(( $r_offset + $(xftwidth "$font" "$(printf "%s" "${r_text[@]}")") ))"
-      r_offset="$(( $r_offset + $(xftwidth "$smallfont" "$(printf "%s" "${r_smalltext[@]}")") ))"
-      r_offset="$(( $r_offset + $(xftwidth "$iconfont" "$(printf "%s" "${r_icons[@]}")") ))"
-      r_offset="$(( $r_offset + $(echo ${r_padding[@]} | sed 's/ /+/g' | bc) ))"
+      if [[ $update_offset = "1" ]]
+      then
+        r_offset=0
+        r_offset="$(( $r_offset + $(xftwidth "$boldfont" "$(printf "%s" "${r_boldtext[@]}")") ))"
+        r_offset="$(( $r_offset + $(xftwidth "$font" "$(printf "%s" "${r_text[@]}")") ))"
+        r_offset="$(( $r_offset + $(xftwidth "$smallfont" "$(printf "%s" "${r_smalltext[@]}")") ))"
+        r_offset="$(( $r_offset + $(xftwidth "$iconfont" "$(printf "%s" "${r_icons[@]}")") ))"
+        r_offset="$(( $r_offset + $(echo ${r_padding[@]} | sed 's/ /+/g' | bc) ))"
+        r_offset="$(( $r_offset + $padding ))"
+      fi
+      
+      init=0
 
       echo -e "^p(_LEFT)^p($padding)$left_pre$(printf "%s" "${left[@]}")$left_post \
         ^p(_CENTER)^p(-$c_offset)$center_pre$(printf "%s" "${center[@]}")$center_post \
         ^p(_RIGHT)^p(-$r_offset)$right_pre$(printf "%s" "${right[@]}")$right_post"
+      
       # echo -e "$(createOutput)"
-      sleep 30 &
+      sleep infinity &
       wait $!
     done
   ) | dzen2 -ta l \
@@ -334,7 +404,8 @@ do
   -fn "$font" \
   -bg "$bgColor" \
   -fg "$fgColor" \
-  -e "button3=exec:kill -SIGUSR1 $(</tmp/pid);sigusr1=exec:kill -SIGUSR1 $(</tmp/pid);onexit=exec:rm -f /tmp/dzenpid,exit:13" &
+  -e "" &
+  # -e "button3=exec:kill -SIGUSR1 $(<$f_c_pid);sigusr1=exec:kill -SIGUSR1 $(<$f_c_pid);onexit=exec:rm -f $f_pid,exit:13" &
 
 
   # -y "$(( $y+$h-20 ))" \ use this for bottom positioning

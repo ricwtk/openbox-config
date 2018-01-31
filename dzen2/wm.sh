@@ -28,4 +28,4 @@ then
   wmctrl -s "$(( $cDesktop==0 ? $(getNumberOfDesktop)-1 : $cDesktop-1 ))"
 fi
 
-$reload_dzen
+# $reload_dzen

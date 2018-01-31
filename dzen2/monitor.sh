@@ -42,5 +42,3 @@ then
   step="5"
   setAllBrightness "$(bc <<< "scale=2; $(( $allB-$step<10 ? 10 : $allB-$step ))/100")"
 fi
-
-$reload_dzen
