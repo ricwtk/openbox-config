@@ -219,9 +219,23 @@ keyboardBlock () {
   local nextIdx=$(( ($thisIdx+1)==${#allEngines[@]} ? 0 : $thisIdx+1 ))
   local prevIdx=$(( ($thisIdx-1)<0 ? ${#allEngines[@]}-1 : $thisIdx-1 ))
   local op="$gap^fn($iconfont)$icon^fn() $big ^fn($smallfont)$small^fn()$gap"
-  op="^ca(1,ibus engine ${allEngines[$nextIdx]} & $reload_dzen)$op^ca()"
-  op="^ca(3,ibus engine ${allEngines[$prevIdx]} & $reload_dzen)$op^ca()"
-
+  op="^ca(1,ibus engine ${allEngines[$nextIdx]} & echo "keyboardBlock" >> $f_change & $reload_dzen)$op^ca()"
+  op="^ca(3,ibus engine ${allEngines[$prevIdx]} & echo "keyboardBlock" >> $f_change & $reload_dzen)$op^ca()"
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_keyboardBlock ( 
+      thisEngine="$(ibus engine)"
+      while true
+      do 
+        newEngine="$(ibus engine)"
+        if [[ "$thisEngine" != "$newEngine" ]]
+        then
+          echo "keyboardBlock" >> $f_change; $reload_dzen; 
+          thisEngine=$newEngine
+        fi
+        sleep .5;
+      done )
+  fi
   echo -e "$op;; $big;$small;$icon;$gapsize2"
 }
 
