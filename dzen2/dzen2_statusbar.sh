@@ -182,11 +182,25 @@ brightnessBlock () {
   local s="$(( $brightness/34 ))"
 
   local op="$gap^fn($iconfont)${icons[$s]}^fn() $brightness^fn($smallfont)%^fn()$gap"
-  op="^ca(1,$monitor ${actions[$s]})$op^ca()"
-  op="^ca(3,$monitor ${actions[$(( ($s+1)%3 ))]})$op^ca()"
-  op="^ca(4,$monitor stepUp)$op^ca()"
-  op="^ca(5,$monitor stepDown)$op^ca()"
-
+  op="^ca(1,$monitor ${actions[$s]} && echo "brightnessBlock" >> $f_change && $reload_dzen)$op^ca()"
+  op="^ca(3,$monitor ${actions[$(( ($s+1)%3 ))]} && echo "brightnessBlock" >> $f_change && $reload_dzen)$op^ca()"
+  op="^ca(4,$monitor stepUp && echo "brightnessBlock" >> $f_change && $reload_dzen)$op^ca()"
+  op="^ca(5,$monitor stepDown && echo "brightnessBlock" >> $f_change && $reload_dzen)$op^ca()"
+  if [[ $init = "1" ]]
+  then
+    coproc dzen2_brightnessBlock ( 
+      brightness="$($monitor overall)"
+      while true
+      do 
+        newBrightness="$($monitor overall)"
+        if [[ "$brightness" != "$newBrightness" ]]
+        then
+          echo "brightnessBlock" >> $f_change; $reload_dzen; 
+          brightness=$newBrightness
+        fi
+        sleep .5;
+      done )
+  fi
   echo -e "$op;; $brightness;%;$icon;$gapsize2"
 }
 keyboardBlock () {
