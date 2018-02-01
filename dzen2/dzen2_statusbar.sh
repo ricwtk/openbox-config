@@ -19,6 +19,7 @@ selectedBgColor="#607D8B"
 bat_acConnectedMsg="🔌  AC connected"
 bat_acDisconnectedMsg="🔋  AC disconnected"
 bat_warnLevel="15"
+workspace_color_cycle=("#EA80FC" "#FF8A80" "#8C9EFF" "#CCFF90" "#FFD180" "#CFD8DC")
 
 # xftwidth from https://github.com/vixus0/xftwidth
 
@@ -60,12 +61,14 @@ desktopSelect () {
   local op="^ca(1, $wm removeDesktop)$gap-$gap^ca()"
   while IFS=" " read -a array
   do
-    local name="\u$(echo "obase=16;ibase=16;03B1+${array[0]}" | bc)"
+    # local name="\u$(echo "obase=16;ibase=16;03B1+${array[0]}" | bc)"
+    local fgColor="${workspace_color_cycle[ $(( ${array[0]}%${#workspace_color_cycle[@]} )) ]}"
     if [[ "${array[1]}" = "*" ]]
     then
-      op="$op^ca(1, $wm switchToD ${array[0]})^bg($selectedBgColor)$gap$name$gap^bg()^ca()"
+      # op="$op^ca(1, $wm switchToD ${array[0]})^bg($selectedBgColor)$gap$name$gap^bg()^ca()"
+      op="$op^ca(1, $wm switchToD ${array[0]})^bg($selectedBgColor)^fg($fgColor)$gap\u25A0$gap^fg()^bg()^ca()"
     else
-      op="$op^ca(1, $wm switchToD ${array[0]})$gap$name$gap^ca()"
+      op="$op^ca(1, $wm switchToD ${array[0]})^fg($fgColor)$gap\u25A1$gap^fg()^ca()"
     fi
   done <<< "$(wmctrl -d | sed "s/^\([0-9]*\ *[-*]\)\ .*$/\1/")"
   op="$op^ca(1, $wm addDesktop)$gap+$gap^ca()"
