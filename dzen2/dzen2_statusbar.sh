@@ -5,6 +5,7 @@ boldfont="Noto Sans:bold:size=9"
 smallfont="Noto Sans:size=6"
 iconfont="FontAwesome:size=10"
 padding="10"
+panelHeight="25"
 left_pre=""
 left_post=""
 center_pre=""
@@ -47,7 +48,7 @@ gapsize2="23"
 init=1
 
 dateAndTime () {
-  local displayFormat="%H:%M  %a  %d %b %Y"
+  local displayFormat="%H:%M  •  %a  •  %d %b"
   local op="$(date +"$displayFormat")"
   op="^ca(1,$calendar)$op^ca()"
   op="^fn($boldfont)$op^fn()"
@@ -55,7 +56,7 @@ dateAndTime () {
   then
     coproc dzen2_dateAndTime ( while true; do sleep 30; echo "dateAndTime" >> $f_change; $reload_dzen; done )
   fi
-  echo -e "$op;$(date +"$displayFormat");;;;0"
+  echo -e "$op;$(date +" %H:%M |  %a %d %b %Y");;;\uf017\uf073;0"
 }
 desktopSelect () {
   local op="^ca(1, $wm removeDesktop)$gap-$gap^ca()"
@@ -431,7 +432,7 @@ do
   -x "$x" \
   -y "$y" \
   -w $w \
-  -h 20 \
+  -h $panelHeight \
   -fn "$font" \
   -bg "$bgColor" \
   -fg "$fgColor" \
