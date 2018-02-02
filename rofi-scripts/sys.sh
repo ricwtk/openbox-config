@@ -1,6 +1,5 @@
 #!/bin/bash
 DIRPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-reload_dzen="$DIRPATH/../dzen2/reload_dzen.sh"
 B_AC="🔌"
 B_BAT="🔋"
 B_LOGO=""
@@ -149,7 +148,6 @@ toggleMute () {
   else
     pacmd set-sink-mute "$(getCurrentSink)" yes
   fi
-  $reload_dzen
 }
 stepUpVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -159,7 +157,6 @@ stepUpVolume () {
     newVol=$fullVolumeValue
   fi
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
-  $reload_dzen
 }
 stepDownVolume () {
   local fullVolumeValue=$(getFullVolumeValue)
@@ -169,7 +166,6 @@ stepDownVolume () {
     newVol=0
   fi
   pacmd set-sink-volume $(getCurrentSink) "$newVol"
-  $($reload_dzen)
 }
 
 getActiveMons () {
@@ -457,7 +453,6 @@ else
         MON="$(extractData $1)"
         PERC="$(echo "$1" | sed 's/.* \(.*\)\%$/\1/')"
         xrandr --output $MON --brightness "$(echo "scale=2; $PERC/100" | bc)"
-        $reload_dzen &
         DISP="$DISP\n$(loadSingleMon "$MON")"
         ;;
       $BR_LOGO*$ACTION*)
@@ -491,7 +486,6 @@ else
             DISP="$DISP\n$(loadSingleMon "$DATA")"
           ;;
         esac
-        $reload_dzen &
         ;;
       $W_LOGO*$ACTION*)
         DATA="$(extractData $1)"
@@ -514,7 +508,6 @@ else
             coproc( x-terminal-emulator --show -e nmtui > /dev/null 2>&1 ) # this option is meant for Guake
             ;;
         esac
-        $reload_dzen &
         ;;
       $W_LOGO*$GLOBE_ICON*)
         DATA="$(extractData $1)"
@@ -526,7 +519,6 @@ else
         else
           coproc( nmcli con up "$DATA" > /dev/null 2>&1 )
         fi
-        $reload_dzen &
         ;;
       $K_LOGO*$ACTION*)
         DATA="$(extractData $1)"
@@ -553,7 +545,6 @@ else
       $K_LOGO*$PENCIL_ICON*)
         DATA="$(extractData $1)"
         ibus engine `getIbusEngine $DATA`
-        $reload_dzen &
         DISP="$DISP\n$(loadHome)"
         ;;
       $S_LOGO*$ACTION*)
