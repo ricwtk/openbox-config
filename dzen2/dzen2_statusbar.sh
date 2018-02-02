@@ -30,6 +30,7 @@ volume="$DIR/volume.sh"
 wm="$DIR/wm.sh"
 monitor="$DIR/monitor.sh"
 calendar="$DIR/../rofi-scripts/rofi-cal-mon.sh $(date +%b\ %Y)"
+killProcess="killall -SIGKILL dzen2_statusbar.sh;killall -SIGKILL dzen2"
 
 # filenames
 f_pid="/tmp/dzenpid"
@@ -46,6 +47,7 @@ gap="^r(10x0)"
 gapsize2="23"
 
 init=1
+z="$(echo -e "\u200B")"
 
 dateAndTime () {
   local displayFormat="%H:%M  •  %a  •  %d %b"
@@ -56,7 +58,7 @@ dateAndTime () {
   then
     coproc dzen2_dateAndTime ( while true; do sleep 30; echo "dateAndTime" >> $f_change; $reload_dzen; done )
   fi
-  echo -e "$op;$(date +" %H:%M |  %a %d %b %Y");;;\uf017\uf073;0"
+  echo -e "$op$z$(date +"$displayFormat")$z$z$z${z}0"
 }
 desktopSelect () {
   local op="^ca(1, $wm removeDesktop)$gap-$gap^ca()"
@@ -83,26 +85,31 @@ desktopSelect () {
 }
 terminal () {
   local op="^ca(1,x-terminal-emulator)$gap^fn($iconfont)\uf120^fn()$gap^ca()"
-  echo -e "$op;;;;\uf120;$gapsize2"
+  echo -e "$op$z$z$z$z\uf120$z$gapsize2"
 }
 spacer () {
-  echo -e "^r(10x0);;;;;15"
+  echo -e "^r(10x0)$z$z$z$z$z15"
 }
 more () {
   local op="^ca(1,rofi -show ⚙)$gap^fn($iconfont)\uf141^fn()$gap^ca()"
-  echo -e "$op;;;;\uf141;$gapsize2"
+  echo -e "$op$z$z$z$z\uf141$z$gapsize2"
 }
 reload () {
   local op="^ca(1,echo "all" >> $f_change && $reload_dzen)$gap^fn($iconfont)\uf021^fn()$gap^ca()"
-  echo -e "$op;;;;\uf021;$gapsize2"
+  echo -e "$op$z$z$z$z\uf021$z$gapsize2"
+}
+restart_dzen2 () {
+  local restart_cmd="killall -SIGKILL dzen2; killall -SIGKILL dzen2_statusbar.sh; $DIR/dzen2_statusbar.sh;"
+  local op="^ca(1,eval $restart_cmd)$gap^fn($iconfont)\uf01e^fn()$gap^ca()"
+  echo -e "$op$z$z$z$z\uf01e$z$gapsize2"
 }
 applications () {
   local op="^ca(1,rofi -show drun)$gap^fn($iconfont)\uf17c^fn()$gap^ca()"
-  echo -e "$op;;;;\uf17c;$gapsize2"
+  echo -e "$op$z$z$z$z\uf17c$z$gapsize2"
 }
 windows () {
   local op="^ca(1,rofi -show window)$gap^fn($iconfont)\uf2d2^fn()$gap^ca()"
-  echo -e "$op;;;;\uf2d2;$gapsize2"
+  echo -e "$op$z$z$z$z\uf2d2$z$gapsize2"
 }
 volumeBlock () {
   local color="$fgColor"
@@ -121,7 +128,7 @@ volumeBlock () {
   then
     coproc dzen2_volumeBlock ( pactl subscribe | grep --line-buffered "sink" | while read i; do echo "volumeBlock" >> $f_change; $reload_dzen; done )
   fi
-  echo -e "$op;; $volPerc;%;$icon;$gapsize2"
+  echo -e "$op$z$z $volPerc$z%$z$icon$z$gapsize2"
 }
 batteryBlock () {
   local isPluggedIn="$(upower -i `upower -e | grep "AC"` | grep "online" | sed "s/^.*: *\([a-z]*\) */\1/")"
@@ -156,7 +163,7 @@ batteryBlock () {
         $reload_dzen
       done )
   fi
-  echo -e "$op;; $batPerc;%;$icon;$gapsize2"
+  echo -e "$op$z$z $batPerc$z%$z$icon$z$gapsize2"
 }
 networkBlock () {
   local ethernetState="$(nmcli device | grep "^[a-zA-Z0-9]* *ethernet" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
@@ -177,7 +184,7 @@ networkBlock () {
   then
     coproc dzen2_networkBlock ( nmcli m | while read i; do echo "networkBlock" >> $f_change; $reload_dzen; done )
   fi
-  echo -e "$op;;;;$icon;$gapsize2"
+  echo -e "$op$z$z$z$z$icon$z$gapsize2"
 }
 brightnessBlock () {
   local brightness="$($monitor overall)"
@@ -205,7 +212,7 @@ brightnessBlock () {
         sleep .5;
       done )
   fi
-  echo -e "$op;; $brightness;%;$icon;$gapsize2"
+  echo -e "$op$z$z $brightness$z%$z$icon$z$gapsize2"
 }
 keyboardBlock () {
   local icon="\uf11c"
@@ -240,7 +247,7 @@ keyboardBlock () {
         sleep .5;
       done )
   fi
-  echo -e "$op;; $big;$small;$icon;$gapsize2"
+  echo -e "$op$z$z $big$z$small$z$icon$z$gapsize2"
 }
 
 
@@ -344,11 +351,11 @@ do
       touch $f_change
       # left
       i=0
-      for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload
+      for l in applications spacer terminal spacer desktopSelect spacer windows spacer reload spacer restart_dzen2
       do
         if [[ $init = "1" || "$(grep -e "^$l$" -e "^all$" <<< "$changes")" ]]
         then
-          while IFS=";" read -a array
+          while IFS="$z" read -a array
           do  
             left[$i]="${array[0]}"
           done <<< "$($l)"
@@ -364,7 +371,7 @@ do
         if [[ $init = "1" || "$(grep -e "^$c$" -e "^all$" <<< "$changes")" ]]
         then
           update_offset=1
-          while IFS=";" read -a array
+          while IFS="$z" read -a array
           do
             center[$i]="${array[0]}"
             c_boldtext[$i]="${array[1]}"
@@ -395,7 +402,7 @@ do
         if [[ $init = "1" || "$(grep -e "^$r$" -e "^all$" <<< "$changes")" ]]
         then
           update_offset=1
-          while IFS=";" read -a array
+          while IFS="$z" read -a array
           do    
             right[$i]="${array[0]}"
             r_boldtext[$i]="${array[1]}"
@@ -436,7 +443,7 @@ do
   -fn "$font" \
   -bg "$bgColor" \
   -fg "$fgColor" \
-  -e "" &
+  -e "onexit=exec:rm -f $f_pid;eval $killProcess;,exit:13" &
   # -e "button3=exec:kill -SIGUSR1 $(<$f_c_pid);sigusr1=exec:kill -SIGUSR1 $(<$f_c_pid);onexit=exec:rm -f $f_pid,exit:13" &
 
 
