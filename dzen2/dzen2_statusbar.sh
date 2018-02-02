@@ -169,6 +169,7 @@ networkBlock () {
   local ethernetState="$(nmcli device | grep "^[a-zA-Z0-9]* *ethernet" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
   local wifiState="$(nmcli device | grep "^[a-zA-Z0-9]* *wifi" | sed "s/^[a-zA-Z0-9]* *[a-zA-Z0-9]* *\([a-zA-Z]*\) *.*$/\1/")"
   local color="$fgColor"
+  local ip="$(ip route get 1 | sed -n "s/^.* \([0-9].*\)$/\1/p")"
   if [[ "$ethernetState" = "connected" ]]
   then
     local icon="\uf0e8"
@@ -179,12 +180,12 @@ networkBlock () {
     local icon="\uf0e8"
     color="$hiddenColor"
   fi
-  local op="$gap^fg($color)^fn($iconfont)$icon^fn()^fg()$gap"
+  local op="$gap^fg($color)^fn($iconfont)$icon^fn() $ip^fg()$gap"
   if [[ $init = "1" ]]
   then
     coproc dzen2_networkBlock ( nmcli m | while read i; do echo "networkBlock" >> $f_change; $reload_dzen; done )
   fi
-  echo -e "$op$z$z$z$z$icon$z$gapsize2"
+  echo -e "$op$z$z $ip$z$z$icon$z$gapsize2"
 }
 brightnessBlock () {
   local brightness="$($monitor overall)"
